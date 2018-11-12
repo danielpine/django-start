@@ -7,4 +7,6 @@ from django.conf.urls import url
 urlpatterns = [
     path('', views.index, name='index'),
     url(r'^testdb$', testdb.testdb),
+    url(r'^hello$', views.hello),
+    url(r'^robot$', views.robot),
 ]
