@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.哈哈")
+    return HttpResponse("Hello, world. You're at the rec index.哈哈")
 
 
 def hello(request):

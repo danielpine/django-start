@@ -1,7 +1,7 @@
 # -*-coding:utf-8 -*-
 import json
 from django.http import HttpResponse
-from polls.models import Test
+from rec.models import Test
 
 
 # 数据库操作
