@@ -132,8 +132,10 @@ function link() {
         } else if (data.status == 3) {
           console.log("受伤了：" + data.message)
           notice('tip2', "Blood :" + data.data)
+          notice('tip3', data.message)
         } else if (data.status == 4) {
           console.log("死了：" + data.message)
+          notice('tip3', data.message)
           delete tanks[data.data]
         }
       }
@@ -383,6 +385,7 @@ $(function () {
   $("#gamestatus").click(function () {
     noticeid('tip2', clientid + ': gamestatus')
     notice('tip2', "Blood :" + '9')
+    notice('tip3', 'The Battle has begun !')
     send(new Msg(1111, 'gamestatus', '', ''))
   })
 })

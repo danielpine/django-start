@@ -9,6 +9,7 @@ class Bullet():
         self.speed = speed
         self.tankid = tankid
         self.bulletid = bulletid
+        self.is_live = True
 
     def run(self):
         # print('running···')

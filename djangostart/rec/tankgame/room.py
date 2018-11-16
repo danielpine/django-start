@@ -56,10 +56,9 @@ class Room():
             #print(k)
             buts = self.battling[k]['tank'].get_bullets()
             dead_buts = []
-            dead_tanks = []
             for but_id in buts:
                 for but_check_k in self.battling:
-                    if k is not but_check_k:
+                    if k is not but_check_k and buts[but_id].is_live:
                         enemy_tank = self.battling[but_check_k]['tank']
                         ex = enemy_tank.x + enemy_tank.settings.bulletCheckDirect[
                             enemy_tank.direct][0]
@@ -74,10 +73,11 @@ class Room():
                             #       buts[but_id].x, buts[but_id].y)
                             # print('hit')
                             dead_buts.append(but_id)
+                            buts[but_id].is_live = False
                             enemy_tank.tank_blood -= 1
-                            print(enemy_tank.id, enemy_tank.tank_blood)
+                            # print(enemy_tank.id, enemy_tank.tank_blood)
                             if enemy_tank.tank_blood < 1 and enemy_tank.isLive:
-                                print(enemy_tank.id, 'dead!')
+                                # print(enemy_tank.id, 'dead!')
                                 self.user_requests[
                                     enemy_tank.id].websocket.send(
                                         json.dumps({
@@ -94,7 +94,7 @@ class Room():
                                             enemy_tank.id
                                         }).encode('utf8'))
                                 enemy_tank.isLive = False
-                            else:
+                            elif enemy_tank.isLive:
                                 self.user_requests[
                                     enemy_tank.id].websocket.send(
                                         json.dumps({
@@ -113,17 +113,20 @@ class Room():
                                             enemy_tank.tank_blood
                                         }).encode('utf8'))
                 #print(buts[but_id].x, buts[but_id].y)
-                is_the_edge = buts[but_id].run()
-                # 边缘检测
-                if is_the_edge:
-                    dead_buts.append(but_id)
+                if buts[but_id].is_live:
+                    is_the_edge = buts[but_id].run()
+                    # 边缘检测
+                    if is_the_edge:
+                        dead_buts.append(but_id)
             for but_id in dead_buts:
                 buts.pop(but_id)
+        dead_tanks = []
         for k in self.battling:
-            #print(k)
             tank = self.battling[k]['tank']
             if not tank.isLive:
-                self.battling[k].pop(tank.id)
+                dead_tanks.append(k)
+        for dead_tank_id in dead_tanks:
+            self.battling.pop(dead_tank_id)
         #self.show_status()
         request.websocket.send(
             json.dumps({
@@ -142,8 +145,6 @@ class Room():
                         default=lambda o: o.__dict__,
                         sort_keys=True))
             }).encode('utf8'))
-        self.timer = threading.Timer(0.1, self.fun_timer,
-                                     (request, ))  #60秒调用一次函数
-        #定时器构造函数主要有2个参数，第一个参数为时间，第二个参数为函数名
+        self.timer = threading.Timer(0.005, self.fun_timer, (request, ))
         self.timer.start()  #启用定时器
         self.count += 1
