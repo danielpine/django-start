@@ -9,4 +9,7 @@ urlpatterns = [
     url(r'^testdb$', testdb.testdb),
     url(r'^hello$', views.hello),
     url(r'^robot$', views.robot),
+    url(r'^websocket/', views.websocket_test),
+    url(r'^echo/', views.echo),
+    url(r'^tank/', views.tank),
 ]

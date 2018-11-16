@@ -1,117 +1,178 @@
-<!DOCTYPE html>
+<!-- {% comment %}
+<!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>用canvas绘制android机器人</title>
+    <title>摄像头调用2</title>
 </head>
+
 <body>
-    <canvas id="myCanvas" width="500px" height="500px"></canvas>
-  <script>
-      var c = document.getElementById("myCanvas");
-      var ctx = c.getContext("2d");
+    <video id="v"></video>
+    <script>
+        !(function () {
+            // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function (constraints) {
+                    // 首先，如果有getUserMedia的话，就获得它
+                    var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-      var W = window.innerWidth-800;
-      var H = window.innerHeight;
-      c.width = W;
-      c.height = H;
+                    // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+                    if (!getUserMedia) {
+                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                    }
 
-      drawRobot();
-
-      function drawRobot(){
-          var color = '#a4ca39';
-          ctx.save(); //锁画布(为了保存之前的画布状态)
-//        ctx.scale(0.3,0.3);//缩放图形
-//        ctx.translate(transX,transY);//距离原位置起点的偏移
-          ctx.fillStyle = color;
-
-          // 头部
-          drawHead(140,100,92);
-
-          function drawHead(startX,startY,radius){
-              ctx.beginPath();
-              ctx.arc(startX,startY,radius,0,Math.PI,true);
-              ctx.fill();
-          }
-
-          //眼睛
-          drawEye(95,60,8);
-          drawEye(174,60,10);
-
-          function drawEye(startX,startY,radius){
-              ctx.fillStyle = "white";
-              ctx.beginPath();
-              ctx.arc(startX,startY,radius,0,2*Math.PI);
-              ctx.fill();
-          }
-
-          //触角
-          drawWireLeft(72,-5,5,20,24);
-          drawWireRight(200,-5,5,20,24);
-
-          function drawWireLeft(startX,startY,lineWidth,lineHeight,endY){
-              ctx.strokeStyle=color;
-              ctx.beginPath();
-              ctx.moveTo(startX,startY);
-              ctx.lineTo(startX+lineHeight,endY);
-              ctx.lineWidth = lineWidth;
-              ctx.stroke();
-          }
-
-          function drawWireRight(startX,startY,lineWidth,lineHeight,endY){
-              ctx.strokeStyle=color;
-              ctx.beginPath();
-              ctx.moveTo(startX,startY);
-              ctx.lineTo(startX-lineHeight,endY);
-              ctx.lineWidth = lineWidth;
-              ctx.stroke();
-          }
-
-          //身体
-          drawBody(48,107,232,255,20);
-
-          function drawBody(startX,startY,endX,endY,radius){
-              ctx.fillStyle=color;
-              ctx.beginPath();
-              ctx.moveTo(startX,startY);
-              ctx.lineTo(endX,startY);
-              ctx.lineTo(endX,endY-radius);
-              ctx.arcTo(endX,endY,endX-radius,endY,radius);
-              ctx.lineTo(startX+radius,endY);
-              ctx.arcTo(startX,endY,startX,endY-radius,radius);
-              ctx.lineTo(startX,startY);
-              ctx.fill();
-              ctx.closePath();
-          }
-
-          //腿
-          drawLeg(82,255,300,20);
-          drawLeg(152,255,300,20);
-
-          function drawLeg(startX,startY,endY,radius){
-              var endX = startX + radius*2;
-
-              ctx.fillStyle=color;
-              ctx.fillRect(startX,startY,radius*2,endY-startY);
-              ctx.beginPath();
-              ctx.arc(endX-radius,endY,radius,0,Math.PI);
-              ctx.fill();
-          }
-
-          //手臂
-          drawHand(20,110,210);
-          drawHand(260,110,210);
-
-          function drawHand(startX,startY,endY){
-              ctx.strokeStyle=color;
-              ctx.beginPath();
-              ctx.moveTo(startX,startY);
-              ctx.lineTo(startX,endY);
-              ctx.lineCap = "round";
-              ctx.lineWidth = 40;
-              ctx.stroke();
-          }
-          ctx.restore();//把当前画布返回(调整)到上一个save()状态之前
-      }
-  </script>
+                    // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+                    return new Promise(function (resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                }
+            }
+            const constraints = {
+                video: true,
+                audio: false
+            };
+            let promise = navigator.mediaDevices.getUserMedia(constraints);
+            promise.then(stream => {
+                let v = document.getElementById('v');
+                // 旧的浏览器可能没有srcObject
+                if ("srcObject" in v) {
+                    v.srcObject = stream;
+                } else {
+                    // 防止再新的浏览器里使用它，应为它已经不再支持了
+                    v.src = window.URL.createObjectURL(stream);
+                }
+                v.onloadedmetadata = function (e) {
+                    v.play();
+                };
+            }).catch(err => {
+                console.error(err.name + ": " + err.message);
+            })
+        })();
+    </script>
 </body>
-</html> 
+
+</html> {% endcomment %} -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>django-websocket</title>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+
+<body>
+    <!-- style="display:none" -->
+    <video autoplay id="sourcevid" style="width:800px;height:600px"></video>
+    <canvas id="output" style="width:800px;height:600px"></canvas>
+    <img id="receiver" style="width:800px;height:600px" />
+    <br>
+    <input type="text" id="message" value="Hello, World!" />
+    sendto <input type="text" id="sendto" value="lili" />
+    from <input type="text" id="from" value="tom" />
+    <br>
+    <br>
+    <button type="button" id="connect_websocket">连接 websocket</button>
+    <button type="button" id="receive_websocket">接收 websocket</button>
+    <button type="button" id="send_message">发送 message</button>
+    <button type="button" id="close_websocket">关闭 websocket</button>
+    <h1>Received Messages</h1>
+    <div id="messagecontainer"></div>
+</body>
+<script type="text/javascript">
+
+    $(function () {
+        var back = document.getElementById('output');
+        var backcontext = back.getContext('2d');
+        var video = document.getElementsByTagName('video')[0];
+        var success = function (stream) {
+            //获取视屏流，转换为url
+            video.src = window.URL.createObjectURL(stream);
+        }
+        // 将视频帧绘制到Canvas对象上,Canvas每100ms切换帧，形成肉眼视频效果  
+        var draw = function () {
+            try {
+                backcontext.drawImage(video, 0, 0, back.width, back.height);
+            } catch (e) {
+                if (e.name == "NS_ERROR_NOT_AVAILABLE") {
+                    return setTimeout(draw, 1);
+                } else {
+                    throw e;
+                }
+            }
+            if (video.src) {
+                // Canvas的内容转化成PNG data URI并发送到服务器，0.5为和压缩系数
+                window.s.send(back.toDataURL("image/jpeg", 0.95));
+            }
+            setTimeout(draw, 0.1);
+        }
+        //调用设备的摄像头,并将资源放入video标签
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, success, console.log);
+        $('#connect_websocket').click(function () {
+            if (window.s) {
+                window.s.close()
+            }
+            /*创建socket连接*/
+            var socket = new WebSocket("ws://" + '127.0.0.1:8000' + "/rec/echo/?user=" + $(
+                '#from').val());
+            socket.onopen = function () {
+                draw();
+                console.log('WebSocket open'); //成功连接上Websocket
+            };
+            socket.onmessage = function (e) {
+                console.log('message: ' + e.data); //打印出服务端返回过来的数据
+                var msgs = e.data.split('*#*#*')
+                $('#messagecontainer').append(
+                        "<div style='width:300px;' align=left>" +
+                        msgs[0] + ':' + '<p>' + msgs[1] + '</p>') +
+                    "</div>";
+            };
+            // Call onopen directly if socket is already open
+            if (socket.readyState == WebSocket.OPEN) socket.onopen();
+            window.s = socket;
+        });
+        $('#receive_websocket').click(function () {
+            //创建一个socket实例
+            var receiver_socket = new WebSocket("ws://" + '127.0.0.1:8000' +
+                "/rec/echo/?user=replay");
+            console.log("ws://" + '127.0.0.1:8000' + "/rec/echo/?user=" + $(
+                '#from').val())
+            var image = document.getElementById('receiver');
+            // 监听消息
+            receiver_socket.onmessage = function (data) {
+                image.src = data.data;
+                console.log(data.data)
+            }
+        });
+        $('#send_message').click(function () {
+            //如果未连接到websocket
+            if (!window.s) {
+                alert("websocket未连接.");
+            } else {
+                window.s.send($('#from').val() + "*#*#*" + $('#message').val() + "*#*#*" + $(
+                    '#sendto').val()); //通过websocket发送数据
+                $('#messagecontainer').append(
+                    "<div style='width:300px;' align=right>" +
+                    $('#from').val() + ':' + '<p>' + $('#message').val() + '</p>' +
+                    "</div>"
+                );
+            }
+        });
+        $('#close_websocket').click(function () {
+            if (window.s) {
+                window.s.close(); //关闭websocket
+                console.log('websocket已关闭');
+            }
+        });
+    });
+</script>
+
+</html>

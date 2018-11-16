@@ -24,14 +24,18 @@ SECRET_KEY = '+_g%z%b^+=2m4q$c!k@qek3d_b$tp0xkohfio^gbvhw1)!5)6%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin', 'django.contrib.auth',
-    'django.contrib.contenttypes', 'django.contrib.sessions',
-    'django.contrib.messages', 'django.contrib.staticfiles', 'rec'
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rec',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +130,19 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(HERE, 'static/'), )
+
+SESSION_COOKIE_NAME = "sessionid"  # Session的cookie保存在浏览器上时的key，即：sessionid＝随机字符串（默认）
+
+SESSION_COOKIE_PATH = "/"  # Session的cookie保存的路径（默认）
+
+SESSION_COOKIE_DOMAIN = None  # Session的cookie保存的域名（默认）
+
+SESSION_COOKIE_SECURE = False  # 是否Https传输cookie（默认）
+
+SESSION_COOKIE_HTTPONLY = True  # 是否Session的cookie只支持http传输（默认）
+
+SESSION_COOKIE_AGE = 1209600  # Session的cookie失效日期（2周）（默认）
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 是否关闭浏览器使得Session过期（默认）
+
+SESSION_SAVE_EVERY_REQUEST = False  # 是否每次请求都保存Session，默认修改之后才保存（默认）
