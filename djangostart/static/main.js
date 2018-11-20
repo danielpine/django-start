@@ -115,7 +115,7 @@ function link() {
     noticeid('tip3', 'WebSocket already open');
   } else {
     /*创建socket连接*/
-    var socket = new WebSocket("ws://" + '192.168.1.14:9000' + "/rec/tank/?clientid=" + clientid);
+    var socket = new WebSocket("ws://" + '192.168.1.4:9000' + "/rec/tank/?clientid=" + clientid);
     socket.onopen = function () {
       noticeid('tip3', 'WebSocket open'); //成功连接上Websocket
     };
@@ -165,7 +165,6 @@ function flashTankMap() {
   drawTank();
   noticeid('tip3', "<div align=left>" + JSON.stringify(tanks) + "</div>")
   //画出自己的子弹
-  //子弹飞效果是怎么出现的?[答 ： 首先我们应该每隔一定时间(setInterval)就去刷新作战区,如果在刷新的时候，子弹坐标变换了，给人的感觉就是子弹在飞!]
   drawBullet();
   if (islinking()) {
     //send(new Msg(0, 'gameinfo', 'tanks', tanks))

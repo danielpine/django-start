@@ -19,7 +19,7 @@ class Settings():
         # 飞船的设置
         self.tank_speed = 3
         self.tank_blood = 9
-        self.bullte_speed = 16
+        self.bullte_speed = 3
         self.bulletDirect = {
             0: [9, 0],
             1: [30, 9],

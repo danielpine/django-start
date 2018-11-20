@@ -105,7 +105,8 @@ def tank(request):
                     room[channelid].add_user_requests(clientid, request)
                     room[channelid].add_user(user)
                     room[channelid].add_battling_user(user)
-                    room[channelid].fun_timer(request)
+                    # room[channelid].fun_timer(request)
+                    room[channelid].run()
                 elif code == 1000:  #
                     pass
                     # print(code)
@@ -159,7 +160,21 @@ def tank(request):
                         battle_ing.move(3)
                         # print('←')
                     elif rcmd == 32:
-                        battle_ing.shot()
+                        # check shoting frequency
+                        # LAST_SHOT_TIME_STAMP
+                        user = room[channelid].battling[clientid]
+                        shotable = False
+                        now = int(time.time() * 1000)
+                        if 'LAST_SHOT_TIME_STAMP' in user:
+                            last = user['LAST_SHOT_TIME_STAMP']
+                            if now - last > 100:
+                                user['LAST_SHOT_TIME_STAMP'] = now
+                                shotable = True
+                        else:
+                            shotable = True
+                            user['LAST_SHOT_TIME_STAMP'] = now
+                        if shotable:
+                            battle_ing.shot()
                         # print('shot')
                     request.websocket.send(
                         json.dumps({
