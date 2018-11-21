@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 import uuid
 import random
+'''
+type 0:humen
+     1:ai
+'''
 
 
 class Tank():
     def __init__(self, roomid, id, x, y, direct, settings):
         self.roomid = roomid
+        self.ai_falsh_time = 0
+        self.ai_last_shot_time = 0
+        self.type = 0
         self.id = id
         self.x = x
         self.y = y
@@ -33,19 +40,23 @@ class Tank():
             self.left()
 
     def up(self):
-        self.y -= self.tank_speed
+        if self.y >= 0:
+            self.y -= self.tank_speed
         self.direct = 0
 
     def right(self):
-        self.x += self.tank_speed
+        if self.x <= 1366 - 30:
+            self.x += self.tank_speed
         self.direct = 1
 
     def down(self):
-        self.y += self.tank_speed
+        if self.y <= 768 - 30:
+            self.y += self.tank_speed
         self.direct = 2
 
     def left(self):
-        self.x -= self.tank_speed
+        if self.x >= 0:
+            self.x -= self.tank_speed
         self.direct = 3
 
     def shot(self):

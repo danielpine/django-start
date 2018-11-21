@@ -26,6 +26,8 @@ channelid = str(uuid.uuid1())
 
 room[channelid] = Room()
 
+room[channelid].channelid = channelid
+
 
 def index(request):
     return HttpResponse("Hello, world. You're at the rec index.哈哈")
@@ -94,6 +96,8 @@ def tank(request):
             code = jmsg['code']
             if code:
                 # print(message)
+                if code == 3333:  #ResetAI
+                    room[channelid].add_ai(random.randint(3, 10))
                 if code == 1111:  #game_status
                     t = Tank(channelid, clientid, random.randint(140, 1300),
                              random.randint(140, 700), random.randint(0, 3),

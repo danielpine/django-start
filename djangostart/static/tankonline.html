@@ -19,13 +19,16 @@
     </script>
     <script type="text/javascript" src="tankGame.js"></script>
     <script type="text/javascript" src="main.js"></script>
+    <style>
+        html,body{-moz-user-select: none; -khtml-user-select: none; user-select: none;}
+    </style>
 </head>
 
 <body onkeydown="keydown();" onkeyup="keyup()" align=center>
     <!--坦克大战的战场-->
     <div>
-        <div class="floatright" style="width:1369px;">
-            <canvas id="tankMap" width="1300px" height="768px" style="background-color:black"></canvas>
+        <div class="floatright" style="width:1366px;" onmousedown="mousedown()">
+            <canvas id="tankMap" width="1366px" height="768px" style="background-color:black"></canvas>
         </div>
         <div class="floatleft" style="width:1300px;padding-right: 10px;">
             <div style="height: 100px;">
@@ -37,6 +40,7 @@
                 <input type="text" id='room' />
                 <input type="button" id="inroom" value="In a Room" />
                 <input type="button" id="gamestatus" d value="Get Game Status" />
+                <input type="button" id="ResetAI" d value="Reset AI" />
                 <div id='tip2'></div>
                 <div id='tip3'></div>
             </div>
