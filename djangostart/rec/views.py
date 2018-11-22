@@ -83,6 +83,28 @@ def echo(request):
 
 
 @accept_websocket  #既能接受http也能接受websocket请求
+def snake(request):
+    clientid = request.GET.get('clientid')
+    last_roomid = -1
+    userinfo = {'clientid': clientid, 'channelid': channelid}
+    request.session['userinfo'] = userinfo
+    request.websocket.send(json.dumps(userinfo).encode('utf8'))
+    print(clientid, ':连接成功')
+    for message in request.websocket:
+        try:
+            jmsg = json.loads(message.decode('utf8'))
+            code = jmsg['code']
+            if code:
+                if code == 1000:
+                    print(jmsg)
+            else:
+                pass
+
+        except Exception as e:
+            print(e)
+
+
+@accept_websocket  #既能接受http也能接受websocket请求
 def tank(request):
     clientid = request.GET.get('clientid')
     last_roomid = -1

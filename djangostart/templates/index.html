@@ -1,61 +1,3 @@
-<!-- {% comment %}
-<!doctype html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>摄像头调用2</title>
-</head>
-
-<body>
-    <video id="v"></video>
-    <script>
-        !(function () {
-            // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
-            if (navigator.mediaDevices === undefined) {
-                navigator.mediaDevices = {};
-            }
-            if (navigator.mediaDevices.getUserMedia === undefined) {
-                navigator.mediaDevices.getUserMedia = function (constraints) {
-                    // 首先，如果有getUserMedia的话，就获得它
-                    var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-                    // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
-                    if (!getUserMedia) {
-                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-                    }
-
-                    // 否则，为老的navigator.getUserMedia方法包裹一个Promise
-                    return new Promise(function (resolve, reject) {
-                        getUserMedia.call(navigator, constraints, resolve, reject);
-                    });
-                }
-            }
-            const constraints = {
-                video: true,
-                audio: false
-            };
-            let promise = navigator.mediaDevices.getUserMedia(constraints);
-            promise.then(stream => {
-                let v = document.getElementById('v');
-                // 旧的浏览器可能没有srcObject
-                if ("srcObject" in v) {
-                    v.srcObject = stream;
-                } else {
-                    // 防止再新的浏览器里使用它，应为它已经不再支持了
-                    v.src = window.URL.createObjectURL(stream);
-                }
-                v.onloadedmetadata = function (e) {
-                    v.play();
-                };
-            }).catch(err => {
-                console.error(err.name + ": " + err.message);
-            })
-        })();
-    </script>
-</body>
-
-</html> {% endcomment %} -->
 <!DOCTYPE html>
 <html>
 
@@ -63,116 +5,255 @@
     <title>django-websocket</title>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 </head>
+<style>
+    #cas{
+            display: block;
+            border:1px solid;
+            margin:auto;
+        }
+</style>
 
 <body>
-    <!-- style="display:none" -->
-    <video autoplay id="sourcevid" style="width:800px;height:600px"></video>
-    <canvas id="output" style="width:800px;height:600px"></canvas>
-    <img id="receiver" style="width:800px;height:600px" />
-    <br>
-    <input type="text" id="message" value="Hello, World!" />
-    sendto <input type="text" id="sendto" value="lili" />
-    from <input type="text" id="from" value="tom" />
-    <br>
-    <br>
-    <button type="button" id="connect_websocket">连接 websocket</button>
-    <button type="button" id="receive_websocket">接收 websocket</button>
-    <button type="button" id="send_message">发送 message</button>
-    <button type="button" id="close_websocket">关闭 websocket</button>
-    <h1>Received Messages</h1>
-    <div id="messagecontainer"></div>
+    <div style="width:100%;height:100%">
+        <div>
+            <canvas id='cas' width="1000" height="500">浏览器不支持canvas，请更新浏览器后再浏览</canvas>
+            <div style="width:50px;margin:10px auto">
+                <button id="controlBtn">停止</button>
+            </div>
+        </div>
+        <!-- <div style="width:100%;height:80%">
+            <canvas id="output" width="1366" height="768"></canvas>
+        </div>
+        <div style="margin:10px auto">
+            <button type="button" id="connect_websocket">连接 websocket</button>
+            <button type="button" id="receive_websocket">接收 websocket</button>
+            <button type="button" id="send_message">发送 message</button>
+            <button type="button" id="close_websocket">关闭 websocket</button>
+        </div> -->
+    </div>
 </body>
 <script type="text/javascript">
+    //用于生成uuid
+    function guid() {
+        function S4() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+        }
+        return (
+            S4() +
+            S4() +
+            '-' +
+            S4() +
+            '-' +
+            S4() +
+            '-' +
+            S4() +
+            '-' +
+            S4() +
+            S4() +
+            S4()
+        )
+    }
+
+    var clientid =
+        localStorage.getItem('clientid') ||
+        (function () {
+            var id = guid()
+            localStorage.setItem('clientid', id)
+            return id
+        })()
+
+
 
     $(function () {
-        var back = document.getElementById('output');
-        var backcontext = back.getContext('2d');
-        var video = document.getElementsByTagName('video')[0];
-        var success = function (stream) {
-            //获取视屏流，转换为url
-            video.src = window.URL.createObjectURL(stream);
-        }
-        // 将视频帧绘制到Canvas对象上,Canvas每100ms切换帧，形成肉眼视频效果  
-        var draw = function () {
-            try {
-                backcontext.drawImage(video, 0, 0, back.width, back.height);
-            } catch (e) {
-                if (e.name == "NS_ERROR_NOT_AVAILABLE") {
-                    return setTimeout(draw, 1);
-                } else {
-                    throw e;
-                }
-            }
-            if (video.src) {
-                // Canvas的内容转化成PNG data URI并发送到服务器，0.5为和压缩系数
-                window.s.send(back.toDataURL("image/jpeg", 0.95));
-            }
-            setTimeout(draw, 0.1);
-        }
-        //调用设备的摄像头,并将资源放入video标签
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia || navigator.msGetUserMedia;
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, success, console.log);
+        // var back = document.getElementById('output');
+        // var ctx = back.getContext('2d');
         $('#connect_websocket').click(function () {
             if (window.s) {
                 window.s.close()
             }
             /*创建socket连接*/
-            var socket = new WebSocket("ws://" + '127.0.0.1:8000' + "/rec/echo/?user=" + $(
-                '#from').val());
+            var socket = new WebSocket("ws://" + '127.0.0.1:8000' + "/rec/snake/?clientid=" + clientid)
             socket.onopen = function () {
-                draw();
                 console.log('WebSocket open'); //成功连接上Websocket
             };
             socket.onmessage = function (e) {
                 console.log('message: ' + e.data); //打印出服务端返回过来的数据
-                var msgs = e.data.split('*#*#*')
-                $('#messagecontainer').append(
-                        "<div style='width:300px;' align=left>" +
-                        msgs[0] + ':' + '<p>' + msgs[1] + '</p>') +
-                    "</div>";
             };
             // Call onopen directly if socket is already open
             if (socket.readyState == WebSocket.OPEN) socket.onopen();
             window.s = socket;
         });
-        $('#receive_websocket').click(function () {
-            //创建一个socket实例
-            var receiver_socket = new WebSocket("ws://" + '127.0.0.1:8000' +
-                "/rec/echo/?user=replay");
-            console.log("ws://" + '127.0.0.1:8000' + "/rec/echo/?user=" + $(
-                '#from').val())
-            var image = document.getElementById('receiver');
-            // 监听消息
-            receiver_socket.onmessage = function (data) {
-                image.src = data.data;
-                console.log(data.data)
-            }
-        });
-        $('#send_message').click(function () {
-            //如果未连接到websocket
-            if (!window.s) {
-                alert("websocket未连接.");
-            } else {
-                window.s.send($('#from').val() + "*#*#*" + $('#message').val() + "*#*#*" + $(
-                    '#sendto').val()); //通过websocket发送数据
-                $('#messagecontainer').append(
-                    "<div style='width:300px;' align=right>" +
-                    $('#from').val() + ':' + '<p>' + $('#message').val() + '</p>' +
-                    "</div>"
-                );
-            }
-        });
-        $('#close_websocket').click(function () {
-            if (window.s) {
-                window.s.close(); //关闭websocket
-                console.log('websocket已关闭');
-            }
-        });
     });
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////      3 D    //////////////////////////////////////////
+    //////////////////////////////////////      Boll   //////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    var canvas = document.getElementById("cas"),
+        ctx = canvas.getContext("2d"),
+        vpx = canvas.width / 2,
+        vpy = canvas.height / 2,
+        Radius = 150, //整体大球的坐标
+        LayerBallNum = 360 / 15, // 横向
+        LayerIntervalUp = 360 / 15; //
+    balls = [],
+        angleX = Math.PI / 100,
+        angleY = Math.PI / 100;
+
+
+    window.addEventListener("mousemove", function (event) {
+        var x = event.clientX - canvas.offsetLeft - vpx;
+        var y = event.clientY - canvas.offsetTop - vpy;
+
+        angleY = -x * 0.0001;
+        angleX = -y * 0.0001;
+    });
+
+    var Animation = function () {
+        this.init();
+    };
+
+    Animation.prototype = {
+        isrunning: false,
+        init: function () {
+            var num = LayerIntervalUp / 2; //layer 的数目    //假定每一层 间隔30  画上半球
+            for (var i = 0; i <= num; i++) {
+                var l = new layer(i, 1);
+                l.draw();
+                var l = new layer(i, -1);
+                l.draw();
+            }
+
+        },
+
+        start: function () {
+            this.isrunning = true;
+            animate();
+        },
+        stop: function () {
+            this.isrunning = false;
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#FFFFF";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        rotateX();
+        rotateY();
+        rotateZ();
+
+        for (var i = 0; i < balls.length; i++) {
+            balls[i].paint();
+        }
+        if (animation.isrunning) {
+            if ("requestAnimationFrame" in window) {
+                requestAnimationFrame(animate);
+            } else if ("webkitRequestAnimationFrame" in window) {
+                webkitRequestAnimationFrame(animate);
+            } else if ("msRequestAnimationFrame" in window) {
+                msRequestAnimationFrame(animate);
+            } else if ("mozRequestAnimationFrame" in window) {
+                mozRequestAnimationFrame(animate);
+            }
+        }
+    }
+
+
+    var layer = function (num, up) {
+        this.radius = Math.sqrt(Math.pow(Radius, 2) - Math.pow(Radius * Math.cos(num * Math.PI * 2 / LayerBallNum),
+            2))
+        this.x = 0;
+        this.y = 0;
+        this.up = up;
+    }
+
+    layer.prototype = {
+        setBalls: function (radius) {
+            for (var i = 0; i < LayerBallNum; i++) {
+                var angle = 2 * Math.PI / LayerBallNum * i;
+                var b = new ball(radius * Math.cos(angle), radius * Math.sin(angle), this.up * Math.sqrt(Math.pow(
+                    Radius, 2) - Math.pow(radius, 2)), 1.5);
+                b.paint();
+                balls.push(b);
+            }
+
+        },
+        draw: function () {
+            ctx.beginPath();
+            ctx.arc(vpx, vpy, this.radius, 0, 2 * Math.PI, true);
+            ctx.strokeStyle = "#FFF";
+            ctx.stroke();
+            this.setBalls(this.radius);
+        }
+    }
+
+    var ball = function (x, y, z, r) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.r = r;
+        this.width = 2 * r;
+    }
+
+    ball.prototype = {
+        paint: function () {
+            var fl = 450 //焦距
+            ctx.save();
+            ctx.beginPath();
+            var scale = fl / (fl - this.z);
+            var alpha = (this.z + Radius) / (2 * Radius);
+            ctx.arc(vpx + this.x, vpy + this.y, this.r * scale, 0, 2 * Math.PI, true);
+            ctx.fillStyle = "rgba(255,255,255," + (alpha + 0.5) + ")";
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    function rotateX() {
+        var cos = Math.cos(angleX);
+        var sin = Math.sin(angleX);
+        for (var i = 0; i < balls.length; i++) {
+            var y1 = balls[i].y * cos - balls[i].z * sin;
+            var z1 = balls[i].z * cos + balls[i].y * sin;
+            balls[i].y = y1;
+            balls[i].z = z1;
+        }
+    }
+
+    function rotateY() {
+        var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+        for (var i = 0; i < balls.length; i++) {
+            var x1 = balls[i].x * cos - balls[i].z * sin;
+            var z1 = balls[i].z * cos + balls[i].x * sin;
+            balls[i].x = x1;
+            balls[i].z = z1;
+        }
+    }
+
+    function rotateZ() {
+        var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+        for (var i = 0; i < balls.length; i++) {
+            var x1 = balls[i].x * cos - balls[i].y * sin;
+            var y1 = balls[i].y * cos + balls[i].x * sin;
+            balls[i].x = x1;
+            balls[i].y = y1;
+        }
+    }
+
+    var animation = new Animation();
+    animation.start();
+
+    document.getElementById("controlBtn").onclick = function () {
+        this.innerText === "开始" ? this.innerText = "停止" : this.innerText = "开始";
+        this.innerText === "开始" ? animation.stop() : animation.start();;
+    }
+    //# sourceURL=pen.js
 </script>
 
 </html>

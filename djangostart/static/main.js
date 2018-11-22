@@ -1,8 +1,30 @@
 var heroColor = new Array('#BA9658', '#FEF26E')
 var enmeyColor = new Array('#00A2B5', '#00FEFE')
+
+//用于生成uuid
+function guid() {
+  function S4() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+  }
+  return (
+    S4() +
+    S4() +
+    '-' +
+    S4() +
+    '-' +
+    S4() +
+    '-' +
+    S4() +
+    '-' +
+    S4() +
+    S4() +
+    S4()
+  )
+}
+
 var clientid =
   localStorage.getItem('clientid') ||
-  (function() {
+  (function () {
     var id = guid()
     localStorage.setItem('clientid', id)
     return id
@@ -125,27 +147,6 @@ function drawTank() {
   }
 }
 
-//用于生成uuid
-function S4() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-}
-
-function guid() {
-  return (
-    S4() +
-    S4() +
-    '-' +
-    S4() +
-    '-' +
-    S4() +
-    '-' +
-    S4() +
-    '-' +
-    S4() +
-    S4() +
-    S4()
-  )
-}
 
 function link() {
   if (window.s && window.s.readyState == WebSocket.OPEN) {
@@ -155,10 +156,10 @@ function link() {
     var socket = new WebSocket(
       'ws://' + '192.168.1.4:9000' + '/rec/tank/?clientid=' + clientid
     )
-    socket.onopen = function() {
+    socket.onopen = function () {
       noticeid('tip3', 'WebSocket open') //成功连接上Websocket
     }
-    socket.onmessage = function(e) {
+    socket.onmessage = function (e) {
       var data = JSON.parse(e.data)
       // console.log(data)
       if (data && data.code === 1111) {
@@ -234,7 +235,7 @@ key_status = {
 }
 
 // 禁止右键菜单
-document.oncontextmenu = function() {
+document.oncontextmenu = function () {
   event.returnValue = false
 }
 
@@ -272,6 +273,7 @@ function mousedown() {
     }
   }
 }
+
 function keydown() {
   //我怎么知道，玩家按下的是什么键
   //说明当按下键后 事件--->event对象----->事件处理函数()
@@ -367,37 +369,37 @@ function Msg(code, type, message, data) {
   this.data = data
 }
 
-$(function() {
-  $('#login').click(function() {
+$(function () {
+  $('#login').click(function () {
     noticeid('tip2', clientid + '：登录中···')
   })
-  $('#link').click(function() {
+  $('#link').click(function () {
     noticeid('tip2', clientid + '：连接中···')
     link()
   })
-  $('#start').click(function() {
+  $('#start').click(function () {
     noticeid('tip2', clientid + '：开始游戏')
     start()
   })
-  $('#getplayers').click(function() {
+  $('#getplayers').click(function () {
     noticeid('tip2', clientid + ': getplayers')
     send(new Msg(1001, 'getplayers', '', ''))
   })
-  $('#inroom').click(function() {
+  $('#inroom').click(function () {
     noticeid('tip2', clientid + ': inroom')
     send(new Msg(1002, 'inroom', '', $('#room').val()))
   })
-  $('#getrooms').click(function() {
+  $('#getrooms').click(function () {
     noticeid('tip2', clientid + ': getrooms')
     send(new Msg(1003, 'getrooms', '', ''))
   })
-  $('#gamestatus').click(function() {
+  $('#gamestatus').click(function () {
     noticeid('tip2', clientid + ': gamestatus')
     notice('tip2', 'Blood :' + '9')
     notice('tip3', 'The Battle has begun !')
     send(new Msg(1111, 'gamestatus', '', ''))
   })
-  $('#ResetAI').click(function() {
+  $('#ResetAI').click(function () {
     send(new Msg(3333, 'ResetAI', '', ''))
   })
 })

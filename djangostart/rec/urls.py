@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^websocket/', views.websocket_test),
     url(r'^echo/', views.echo),
     url(r'^tank/', views.tank),
+    url(r'^snake/', views.snake),
 ]
