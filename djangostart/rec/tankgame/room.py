@@ -309,12 +309,14 @@ class Room():
         for ai_id in self.ai:
             tank = self.ai[ai_id]
             #随机方向
-            if now - tank.ai_falsh_time > random.randint(700, 1600):
+            if now - tank.ai_falsh_time > random.randint(700, 1400):
                 tank.direct = random.randint(0, 3)
                 tank.ai_falsh_time = now
             tank.move(tank.direct)
-            b = random.randint(0, 10)
-            if b < 5 and now - tank.ai_last_shot_time > 500:
+            if random.randint(
+                    0,
+                    10) < 5 and now - tank.ai_last_shot_time > random.randint(
+                        500, 1000):
                 tank.shot()
                 tank.ai_last_shot_time = now
 
