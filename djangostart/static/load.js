@@ -38,7 +38,7 @@ function guid() {
 
 document.write(
     //  "<script src='/static/particle_3d_boll.js?t=" + guid() + "'></script>"
-    "<script src='/static/canvas_learn.js?t=" + guid() + "'></script>"
+    "<script src='/static/canvas_learn.js?t=" + new Date().getTime() + "'></script>"
 );
 
 // //"<script src='lib/3rd/require.js'></script>"+
