@@ -109,7 +109,7 @@ var RENDERERER = {
             this.last_flash = now
         }
         this.context.strokeStyle = this.color_404
-        this.context.strokeText("Sorry , 404 Not Found.", this.width / 2 - 200, this.height / 2);
+        this.context.strokeText("Sorry, 404 Not Found, But You Found a Boll!", this.width / 2 - 330, this.height / 2);
         this.context.fillStyle = rgb(255, 255, 255)
         this.context.font = "25px Arial";
         this.context.fillText(JSON.stringify(this.boll), 20, 50);
