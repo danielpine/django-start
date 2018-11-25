@@ -154,7 +154,7 @@ function link() {
     } else {
         /*创建socket连接*/
         var socket = new WebSocket(
-            'ws://' + '192.168.1.4:9000' + '/rec/tank/?clientid=' + clientid
+            'ws://' + 'www.cutesensor.top/websocket' + '/rec/tank/?clientid=' + clientid
         )
         socket.onopen = function() {
             noticeid('tip3', 'WebSocket open') //成功连接上Websocket
