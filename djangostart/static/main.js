@@ -57,15 +57,15 @@ function drawBullet() {
 
 //绘制坦克(敌人坦克和自己的坦克)
 function drawTank() {
-    //说明所有的坦克都要isLive这个属�
+    //说明所有的坦克都要isLive这个属性
     for (var tid in window.tanks) {
         var tank = window.tanks[tid].tank
         if (tank.isLive) {
-            // 血�
+            // 血条
             for (var i = 0; i < tank.tank_blood; i++) {
                 //画出炮筒(直线)
                 cxt.strokeStyle = tank.tank_color[0]
-                    //设置线条的宽�
+                    //设置线条的宽度
                 cxt.lineWidth = 1.5
                 cxt.beginPath()
                 cxt.moveTo(tank.x + 10 * i - 20, tank.y - 15)
@@ -73,7 +73,7 @@ function drawTank() {
                 cxt.closePath()
                 cxt.stroke()
                 cxt.strokeStyle = '#000000'
-                    //设置线条的宽�
+                    //设置线条的宽度
                 cxt.lineWidth = 1.5
                 cxt.beginPath()
                 cxt.moveTo(tank.x + 10 * i - 20 + 7, tank.y - 15)
@@ -82,25 +82,25 @@ function drawTank() {
                 cxt.stroke()
             }
             switch (tank.direct) {
-                case 0: //�
-                case 2: // �
-                    //画出自己的坦克，使用前面的绘图技�
+                case 0: //上
+                case 2: // 下
+                    //画出自己的坦克，使用前面的绘图技术
                     //设置颜色
                     cxt.fillStyle = tank.tank_color[0]
                         //韩老师使用 先死--->后活 (初学者最好用这个方法)
                         //先画出左面的矩形
                     cxt.fillRect(tank.x, tank.y, 5, 30)
-                        //画出右边的矩�这时请大家思路->一定要一个参照点)
+                        //画出右边的矩形(这时请大家思路->一定要一个参照点)
                     cxt.fillRect(tank.x + 15, tank.y, 5, 30)
                         //画出中间矩形
                     cxt.fillRect(tank.x + 6, tank.y + 5, 8, 20)
-                        //画出坦克的盖�
+                        //画出坦克的盖子
                     cxt.fillStyle = tank.tank_color[1]
                     cxt.arc(tank.x + 10, tank.y + 15, 4, 0, 360, true)
                     cxt.fill()
                         //画出炮筒(直线)
                     cxt.strokeStyle = tank.tank_color[1]
-                        //设置线条的宽�
+                        //设置线条的宽度
                     cxt.lineWidth = 1.5
                     cxt.moveTo(tank.x + 10, tank.y + 15)
                     if (tank.direct == 0) {
@@ -111,25 +111,25 @@ function drawTank() {
                     cxt.closePath()
                     cxt.stroke()
                     break
-                case 1: //右和�
+                case 1: //右和左
                 case 3:
-                    //画出自己的坦克，使用前面的绘图技�
+                    //画出自己的坦克，使用前面的绘图技术
                     //设置颜色
                     cxt.fillStyle = tank.tank_color[0]
                         //韩老师使用 先死--->后活 (初学者最好用这个方法)
                         //先画出左面的矩形
                     cxt.fillRect(tank.x, tank.y, 30, 5)
-                        //画出右边的矩�这时请大家思路->一定要一个参照点)
+                        //画出右边的矩形(这时请大家思路->一定要一个参照点)
                     cxt.fillRect(tank.x, tank.y + 15, 30, 5)
                         //画出中间矩形
                     cxt.fillRect(tank.x + 5, tank.y + 6, 20, 8)
-                        //画出坦克的盖�
+                        //画出坦克的盖子
                     cxt.fillStyle = tank.tank_color[1]
                     cxt.arc(tank.x + 15, tank.y + 10, 4, 0, 360, true)
                     cxt.fill()
                         //画出炮筒(直线)
                     cxt.strokeStyle = tank.tank_color[1]
-                        //设置线条的宽�
+                        //设置线条的宽度
                     cxt.lineWidth = 1.5
                     cxt.moveTo(tank.x + 15, tank.y + 10)
                         //向右
@@ -168,13 +168,13 @@ function link() {
                         window.tanks = data.data
                         flashTankMap()
                     } else if (data.status == 0) {
-                        console.log('游戏结束�)
+                        console.log('游戏结束！')
                     } else if (data.status == 3) {
                         console.log('受伤了：' + data.message)
                         notice('tip2', 'Blood :' + data.data)
                         notice('tip3', data.message)
                     } else if (data.status == 4) {
-                        console.log('死了� + data.message)
+                        console.log('死了：' + data.message)
                         notice('tip3', data.message)
                         delete tanks[data.data]
                     }
@@ -199,12 +199,12 @@ function send(msg) {
 }
 
 function flashTankMap() {
-    //把画布清�
+    //把画布清理
     cxt.clearRect(0, 0, 1366, 768)
         //我的坦克
     drawTank()
     noticeid('tip3', '<div align=left>' + JSON.stringify(tanks) + '</div>')
-        //画出自己的子�
+        //画出自己的子弹
     drawBullet()
     if (islinking()) {
         //send(new Msg(0, 'gameinfo', 'tanks', tanks))
@@ -247,15 +247,15 @@ var shot_status = {
 function mousedown() {
     // event.x 鼠标横轴
     // event.y 鼠标纵轴
-    // event.keycode 键盘�
-    // event.button==0 默认。没有按任何按钮�
+    // event.keycode 键盘值
+    // event.button==0 默认。没有按任何按钮。
     // event.button==1 鼠标左键
     // event.button==2 鼠标右键
-    // event.button==3 鼠标左右键同时按�
+    // event.button==3 鼠标左右键同时按下
     // event.button==4 鼠标中键
-    // event.button==5 鼠标左键和中键同时按�
-    // event.button==6 鼠标右键和中键同时按�
-    // event.button==7 所有三个键都按�
+    // event.button==5 鼠标左键和中键同时按下
+    // event.button==6 鼠标右键和中键同时按下
+    // event.button==7 所有三个键都按下
     if (event.button == 0) {
         sendcmd(clientid, 32)
     } else if (event.button == 2) {
@@ -276,8 +276,8 @@ function mousedown() {
 
 function keydown() {
     //我怎么知道，玩家按下的是什么键
-    //说明当按下键�事件--->event对象----->事件处理函数()
-    var code = event.keyCode //对应字母的ascii�>我们看码�
+    //说明当按下键后 事件--->event对象----->事件处理函数()
+    var code = event.keyCode //对应字母的ascii码->我们看码表
     var tank = tanks[clientid]
     switch (code) {
         case 87: //W
@@ -308,7 +308,7 @@ function sendcmd(clientid, code) {
 }
 
 function keyup() {
-    // var code = event.keyCode; //对应字母的ascii�>我们看码�
+    // var code = event.keyCode; //对应字母的ascii码->我们看码表
     // switch (code) {
     //   case 87: //W
     //   case 38: //W
@@ -345,7 +345,7 @@ function keyup() {
 
 function start() {
     if (tanks[clientid]) {
-        console.log('已开始游�)
+        console.log('已开始游戏')
     } else {
         var me = new Tank(clientid, 140, 140, 0, heroColor)
         tanks[clientid] = me
@@ -378,7 +378,7 @@ $(function() {
         link()
     })
     $('#start').click(function() {
-        noticeid('tip2', clientid + '：开始游�)
+        noticeid('tip2', clientid + '：开始游戏')
         start()
     })
     $('#getplayers').click(function() {
