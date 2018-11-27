@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DanielPine's World</title>
+    <script src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            // var back = document.getElementById('output');
+            // var ctx = back.getContext('2d');
+            $('#connect_websocket').click(function() {
+                if (window.s) {
+                    window.s.close()
+                }
+                /*创建socket连接*/
+                var socket = new WebSocket("ws://" + '127.0.0.1:8000' + "/rec/snake/?clientid=" +
+                    clientid)
+                socket.onopen = function() {
+                    console.log('WebSocket open'); //成功连接上Websocket
+                };
+                socket.onmessage = function(e) {
+                    console.log('message: ' + e.data); //打印出服务端返回过来的数据
+                };
+                // Call onopen directly if socket is already open
+                if (socket.readyState == WebSocket.OPEN) socket.onopen();
+                window.s = socket;
+            });
+        });
+    </script>
+</head>
+<style>
+    #cas {
+        display: block;
+        border: 1px solid;
+        margin: auto;
+    }
+    
+    .container {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+    }
+    
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-size: 12px;
+        font-family: "Microsoft YaHei", "微软雅黑", "Arial", "黑体", "宋体", sans-serif;
+        background: #ececec;
+    }
+    
+    * {
+        padding: 0;
+        margin: 0;
+    }
+    
+    ul,
+    li {
+        list-style: none;
+    }
+</style>
+
+<body>
+    <canvas id="container" width="680" height="500"></canvas>
+</body>
+
+<script id="vert-shader" type="x-shader/x-vertex">
+    attribute vec3 vertexPos; uniform mat4 modelViewMatrix; uniform mat4 projectionMatrix; void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPos, 1.0); }
+</script>
+
+<script id="frag-shader" type="x-shader/x-fragment">
+    precision mediump float; void main() { gl_FragColor = vec4(0.0,1.0,0.0,1.0); }
+</script>
+<script>
+    document.write('<script src="' + '/static/webgl/load.js?t=' + new Date().getTime() + '"><\/script>');
+</script>
+
+</html>

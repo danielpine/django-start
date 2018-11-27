@@ -21,6 +21,7 @@ from . import views
 
 urlpatterns = [
     path('rec/', include('rec.urls')),
+    path('webgl/', views.webgl),
     path('admin/', admin.site.urls),
     path('', views.index),
 ]
