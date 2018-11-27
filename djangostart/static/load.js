@@ -36,9 +36,25 @@ function guid() {
     return '-'.join([S4(), S4(), S4(), S4(), S4(), S4(), S4(), S4()])
 }
 
+function random(start, end) {
+    switch (arguments.length) {
+        case 1:
+            return parseInt(Math.random() * start + 1);
+        case 2:
+            return parseInt(Math.random() * (end - start + 1) + start);
+        default:
+            return 0;
+    }
+}
+
+function rgb(a, b, c) {
+    return "rgb(" + a + "," + b + "," + c + ")"
+}
+
 document.write(
     //  "<script src='/static/particle_3d_boll.js?t=" + guid() + "'></script>"
-    "<script src='/static/canvas_learn.js?t=" + new Date().getTime() + "'></script>"
+    // "<script src='/static/canvas_learn.js?t=" + new Date().getTime() + "'></script>"
+    "<script src='/static/canvasBg.js?t=" + new Date().getTime() + "'></script>"
 );
 
 // //"<script src='lib/3rd/require.js'></script>"+

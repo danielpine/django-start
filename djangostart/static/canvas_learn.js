@@ -1,5 +1,5 @@
 var random = {
-    randomInt: function(start, end) {
+    randomInt: function random(start, end) {
         switch (arguments.length) {
             case 1:
                 return parseInt(Math.random() * start + 1);
@@ -10,6 +10,7 @@ var random = {
         }
     }
 }
+
 
 function rgb(a, b, c) {
     return "rgb(" + a + "," + b + "," + c + ")"
@@ -109,7 +110,7 @@ var RENDERERER = {
             this.last_flash = now
         }
         this.context.strokeStyle = this.color_404
-        // this.context.strokeText("Sorry, 404 Not Found, But You Found a Boll!", this.width / 2 - 330, this.height / 2);
+            // this.context.strokeText("Sorry, 404 Not Found, But You Found a Boll!", this.width / 2 - 330, this.height / 2);
         this.context.strokeText("Welcome to Daniel Pine's Site!", this.width / 2 - 330, this.height / 2);
         this.context.fillStyle = rgb(255, 255, 255)
         this.context.font = "25px Arial";

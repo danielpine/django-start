@@ -54,14 +54,14 @@
 </style>
 
 <body>
-    <div style="width:100%;height:100%;cursor:url('/static/pointer.png'),pointer">
-        <!--  <div>
+    <!-- <div style="width:100%;height:100%;cursor:url('/static/pointer.png'),pointer">
+          <div>
            <canvas id='cas' width="1000" height="500">浏览器不支持canvas，请更新浏览器后再浏览</canvas>
             <div style="width:50px;margin:10px auto">
                 <button id="controlBtn">停止</button>
             </div> 
-        </div>-->
-        <!-- <div style="width:100%;height:80%">
+        </div>
+        <div style="width:100%;height:80%">
             <canvas id="output" width="1366" height="768"></canvas>
         </div>
         <div style="margin:10px auto">
@@ -69,11 +69,115 @@
             <button type="button" id="receive_websocket">接收 websocket</button>
             <button type="button" id="send_message">发送 message</button>
             <button type="button" id="close_websocket">关闭 websocket</button>
-        </div> -->
-        <div id="jsi-particle-container" class="container"></div>
-        <!-- TEST -->
-        <!-- <div id="jsi-particle-container" class="container"></div> -->
-    </div>
+        </div> 
+        <div id="jsi-particle-container" class="container"></div> 
+         TEST 
+         <div id="jsi-particle-container" class="container"></div> 
+         <script src='/static/load.js'></script>
+    </div>-->
+</body>
+
+</html>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        
+        body {
+            font-size: 12px;
+            overflow: hidden;
+            font-family: "Microsoft YaHei", "微软雅黑", "Arial", "黑体", "宋体", sans-serif;
+            background: #ececec;
+        }
+        
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        .panel {
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            z-index: 2;
+        }
+        
+        .btns {
+            position: absolute;
+            left: 30px;
+            top: 30px;
+            width: 330px;
+            height: 30px;
+            perspective: 800px;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .btns.active span {
+            box-shadow: 0 0 30px #fff;
+        }
+        
+        .btns:nth-of-type(2) {
+            top: 90px;
+        }
+        
+        .btns:nth-of-type(3) {
+            top: 150px;
+        }
+        
+        .btns span {
+            display: block;
+            width: 100px;
+            height: 30px;
+            margin-left: 5px;
+            line-height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            position: relative;
+            float: left;
+            transform-style: preserve-3d;
+            transform-origin: top;
+            transition: 0.3s;
+            border: 2px solid #fff;
+        }
+        
+        .btns span:before {
+            content: attr(data-hover);
+            position: absolute;
+            display: block;
+            width: 100%;
+            left: -2px;
+            top: 100%;
+            height: 100%;
+            border: 2px solid #fff;
+            background: #000;
+            text-align: center;
+            transform-origin: top;
+            opacity: 0;
+            transform: rotateX(-90deg);
+            transition: 0.3s;
+        }
+        
+        .btns span:hover {
+            transform: rotateX(90deg);
+        }
+        
+        .btns span:hover:before {
+            opacity: 1;
+            box-shadow: 0 0 30px #fff;
+        }
+    </style>
+</head>
+
+<body>
 </body>
 <script src='/static/load.js'></script>
 
