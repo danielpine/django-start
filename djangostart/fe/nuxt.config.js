@@ -40,11 +40,6 @@ module.exports = {
       {
         type: 'text/javascript',
         charset: 'utf-8',
-        src: '/deri-web/loginController.do?bookinfo'
-      },
-      {
-        type: 'text/javascript',
-        charset: 'utf-8',
         src: '/js/clear.js'
       }
     ]
