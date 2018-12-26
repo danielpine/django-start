@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>FS-CCS.Sched</title>
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/ele/index.css" />
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="/css/index_mod_fx.css" />
+    <!-- 引入组件库 -->
+    <script src="/ele/index.js"></script>
+    <!-- 自定义js -->
+    <script type="text/javascript" src="/js/util.js"></script>
+  </head>
+
+  <body>
+    <div id="vue_det">
+      <div style="width:2600px;" v-if="window.opener&&sched">
+      <table style="border:0px">
+        <tr style="border:0px">
+          <td style="border:0px">
+          <div class="left" style="width:1600px;" v-cloak align="left">
+          <font style="color:blue; font-size:1.5em;" align="center"> {{ title }}序列 </font>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+            >交易编号：{{ dealId }}</span
+          >
+          <div v-if="sched.PaySched">
+            <table border="1" align="center" cellpadding="0" cellspacing="0">
+              <thead>
+                <tr style="height: 31px;background:lightcyan">
+                  <td style="font-size:16px;font-weight:normol;" colspan="2">
+                    个性化
+                  </td>
+                  <td style="font-size:16px;font-weight:normol;" colspan="2">
+                    {{ sched.PaySched.CustDate === '0' ? 'No' : 'Yes' }}
+                  </td>
+                  <td style="font-size:16px;font-weight:normol;"></td>
+                  <td style="font-size:16px;font-weight:normol;">
+                    {{ sched.PaySched.CustNotl === '0' ? 'No' : 'Yes' }}
+                  </td>
+                  <td style="font-size:16px;font-weight:normol;">
+                    {{ sched.PaySched.CustFixd === '0' ? 'No' : 'Yes' }}
+                  </td>
+                  <td
+                    style="font-size:16px;font-weight:normol;"
+                    colspan="6"
+                  ></td>
+                </tr>
+                <tr style="height: 41px;background:lightcyan">
+                  <td style="font-size:16px;font-weight:normol;width: 60px;">
+                    编号
+                  </td>
+                  <td
+                    v-for="
+                item,key in SchedTableHead"
+                    :key="key"
+                  >
+                    {{ item }}
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item,i in sched.PaySched.List" :key="i">
+                  <td style="background:lightcyan">{{ i + 1 }}</td>
+                  <td
+                    v-for="cell,k in SchedTableHead"
+                    :style="payStyle(k)"
+                    :key="k"
+                  >
+                    <span v-if="k==='Notional'">
+                      <el-input
+                        size="medium"
+                        class="text-end"
+                        style="font-size:16px;font-weight:normol;width: 99%;"
+                        v-model="item[k]"
+                        @change="inputChange(sched.PaySched,k,item)"
+                      ></el-input>
+                    </span>
+                    <span v-else-if="k==='FixRate'">
+                      <el-input
+                        size="medium"
+                        class="text-center"
+                        style="font-size:16px;font-weight:normol;width: 99%;"
+                        v-model="item[k]"
+                        @change="inputChange(sched.PaySched,k,item)"
+                      ></el-input>
+                    </span>
+                    <span v-else-if="k==='StaDate'">
+                      {{
+                        formatDate(
+                          i === 0
+                            ? StaDate
+                            : sched.PaySched.List[i - 1].EndDate,
+                          '-'
+                        )
+                      }}
+                    </span>
+                    <span v-else-if="k.indexOf('Date')!=-1">
+                      <el-date-picker
+                        size="mini"
+                        style="font-size:16px;font-weight:normol;width: 98%;"
+                        v-model="item[k]"
+                        type="date"
+                        value-format="yyyyMMdd"
+                        @change="inputChange(sched.PaySched,'CustDate')"
+                        format="yyyy-MM-dd"
+                        placeholder=""
+                      >
+                      </el-date-picker>
+                    </span>
+                    <span
+                      v-else-if="k.indexOf('PV')!=-1||k.indexOf('Payment')!=-1"
+                      style="float:right;margin-right:5px"
+                    >
+                      {{ formatNumber(item[k], 2, true) }}
+                    </span>
+                    <span
+                      v-else-if="k.indexOf('YearFrac')!=-1||k.indexOf('PerdRate')!=-1"
+                    >
+                      {{ formatNumber(item[k], 5, true) }}
+                    </span>
+                    <span v-else-if="k.indexOf('Zcdf')!=-1">
+                      {{ formatNumber(item[k], 9, true) }}
+                    </span>
+                    <span v-else-if="k.indexOf('Index')!=-1">
+                      {{ item[k] === 'None' ? '' : item[k] }}
+                    </span>
+                    <span v-else> {{ item[k] }} </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <br />
+          <div
+            class="left"
+            style="width:800px;"
+            v-if="sched.NotionlSched"
+            v-cloak
+            align="left"
+          >
+            <font style="color:blue; font-size:1.5em;"> 本金交换序列 </font>
+            <table border="1"  cellpadding="0" cellspacing="0">
+              <thead>
+                <tr style="height: 41px;background:lightcyan">
+                  <td style="font-size:16px;font-weight:normol;width: 60px;">
+                    编号
+                  </td>
+                  <td
+                    v-for="
+                item,key in NotionlSchedTableHead"
+                    :key="key"
+                  >
+                    {{ item }}
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item,i in sched.NotionlSched.List" :key="i">
+                  <td style="background:lightcyan">{{ i + 1 }}</td>
+                  <td
+                    v-for="cell,k in NotionlSchedTableHead"
+                    :style="nolStyle(k)"
+                    :key="k"
+                  >
+                    <span v-if="k.indexOf('Date')!=-1">
+                      {{ formatDate(item[k], '-') }}
+                    </span>
+                    <span
+                      v-else-if="k.indexOf('PV')!=-1||k.indexOf('PayNotl')!=-1"
+                      style="float:right;margin-right:5px"
+                    >
+                      {{ formatNumber(item[k], 2, true) }}
+                    </span>
+                    <span v-else > {{ item[k] }} </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="left" style="width:300px;margin-left:-2px" v-cloak align="left">
+            <br />
+            <br />
+            <el-button
+              style="font-size: 16px;"
+              size="mini"
+              type="primary"
+              @click="setSched"
+              >保存</el-button
+            >
+          </div>
+        </div>
+          
+          
+          </td>
+          <td  valign="top" style="border:0px">
+            <div
+          class="left"
+          style="width:800px;margin-left: 10px;"
+          v-if="sched.ResetSched"
+          v-cloak
+          align="center"
+         
+        >
+          <font style="color:blue; font-size:1.5em;"> 利率重置序列 </font>
+          <table border="1" align="center" cellpadding="0" cellspacing="0">
+            <thead>
+              <tr style="height: 31px;background:lightcyan">
+                <td style="font-size:16px;font-weight:normol;"></td>
+                <td style="font-size:16px;font-weight:normol;" colspan="6"></td>
+              </tr>
+              <tr style="height: 41px;background:lightcyan">
+                <td style="font-size:16px;font-weight:normol;width: 60px;">
+                  编号
+                </td>
+                <td
+                  v-for="
+                item,key in ResetSchedTableHead"
+                  :key="key"
+                >
+                  {{ item }}
+                </td>
+              </tr>
+            </thead>
+            <tbody v-for="item,i in sched.ResetSched.ResetList" :key="i">
+              <tr v-for="line,j in item.list" :key="j">
+                <td
+                  v-if="j===0"
+                  :rowspan="item.list.length"
+                  style="background:lightcyan"
+                >
+                  {{ i + 1 }}
+                </td>
+                <td
+                  v-if="j===0"
+                  :rowspan="item.list.length"
+                  :style="resStyle('textDate')"
+                >
+                  {{ formatDate(item.AccrSta, '-') }}
+                </td>
+                <td
+                  v-if="j===0"
+                  :rowspan="item.list.length"
+                  :style="resStyle('textDate')"
+                >
+                  {{ formatDate(item.AccrEnd, '-') }}
+                </td>
+                <td :style="resStyle('QuoDate')">
+                  <el-date-picker
+                    size="mini"
+                    style="font-size:16px;font-weight:normol;width: 98%;"
+                    v-model="line.QuoDate"
+                    type="date"
+                    value-format="yyyyMMdd"
+                    format="yyyy-MM-dd"
+                    @change="inputChange(line,'r')"
+                  >
+                  </el-date-picker>
+                </td>
+                <td :style="resStyle('textDate')">
+                  {{ formatDate(line.EffDate, '-') }}
+                </td>
+                <td :style="resStyle('Rate')">
+                  <el-input
+                    size="medium"
+                    class="text-center"
+                    style="font-size:16px;font-weight:normol;width: 98%;"
+                    v-model="line.Rate"
+                    :format="formatRate(line.Rate)"
+                    @change="inputChange(line,'ResetSched','Rate')"
+                  ></el-input>
+                </td>
+                <td :style="resStyle('Type')">{{ line.Type }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+          
+          </td>
+        </tr>
+      </table>
+        <!-- PaySched -->
+        
+        <!-- end -->
+
+
+
+        
+      </div>
+      <div v-else v-cloak>{{ tip }}</div>
+    </div>
+    <script type="text/javascript">
+      /* eslint-disable */
+      var vm = new Vue({
+        el: '#vue_det',
+        data: {
+          dealId: 'New',
+          tip: '加载中···',
+          sched: {},
+          type: '',
+          schedName: '',
+          payRecv: '',
+          StaDate: '',
+          title: '',
+          h: {
+            Pay: '支付',
+            Receive: '收取'
+          },
+          SchedTableHead: {
+            StaDate: '计息开始',
+            EndDate: '计息结束',
+            PayDate: '支付日期',
+            YearFrac: '年化因子',
+            Notional: '本金',
+            FixRate: '固定利率',
+            Index: '利率基准',
+            PerdRate: '区间利率',
+            Payment: '金额',
+            Zcdf: '贴现因子',
+            PV: '现值',
+            FX: 'PerdFx'
+          },
+          ResetSchedTableHead: {
+            AccrSta: '计息开始',
+            AccrEnd: '计息结束',
+            QuoDate: '报价日期',
+            EffDate: '起息日期',
+            Rate: '利率',
+            Type: '类型'
+          },
+          NotionlSchedTableHead: {
+            PayDate: '支付日期',
+            PayNotl: '金额',
+            Disc: '贴现因子',
+            PV: '现值'
+          }
+        },
+        created: function() {
+          this.type = this.getQueryString('type')
+          this.payRecv = this.getQueryString('payRecv')
+          this.schedName = this.getQueryString('schedName')
+          this.StaDate = this.getQueryString('StaDate')
+          this.title = this.h[this.payRecv]
+          this.tip = '加载中···'
+          if (
+            typeof window !== 'undefined' &&
+            window.opener &&
+            window.opener.guid
+          ) {
+            // this.env = window.opener.env
+            this.dealId = window.opener.dealId
+            this.sched = JSON.parse(
+              window.localStorage.getItem(
+                window.opener.guid + '-' + this.type + '-' + this.schedName
+              )
+            )
+            if (!this.sched) {
+              this.tip = '暂无序列'
+            }
+          }
+          console.log(this.sched)
+        },
+        methods: {
+          payStyle: function(k) {
+            var style = {}
+            style['font-size'] = '16px'
+            style['height'] = '31px'
+            style['font-weight'] = 'normol'
+            switch (k) {
+              case 'Notional':
+                style.width = '180px'
+                break
+              case 'FixRate':
+                style.width = '120px'
+                break
+              default:
+                style['text-align'] = 'center'
+                break
+            }
+            if (k.indexOf('Date') != -1) {
+              style.width = '150px'
+            }
+            return style
+          },
+          nolStyle: function(k) {
+            var style = {}
+            style['font-size'] = '16px'
+            style['height'] = '31px'
+            style['font-weight'] = 'normol'
+            switch (k) {
+              case 'PayNotl':
+              case 'PV':
+                style.width = '150px'
+                style['text-align'] = 'right'
+                break
+              default:
+                style['text-align'] = 'center'
+                break
+            }
+            if (k.indexOf('Date') != -1) {
+              style.width = '150px'
+            }
+            return style
+          },
+          resStyle: function(k) {
+            var style = {}
+            style['font-size'] = '16px'
+            style['height'] = '31px'
+            style['font-weight'] = 'normol'
+            switch (k) {
+              case 'textDate':
+                style.width = '120px'
+                break
+              case 'QuoDate':
+              case 'Rate':
+                style.width = '150px'
+                break
+              case 'Type':
+                style.width = '30px'
+                break
+              default:
+                style['text-align'] = 'center'
+                break
+            }
+            return style
+          },
+          formatRate:function(rate){
+            rate=this.formatNumber(rate,8,true)
+          },
+          inputChange: function(item, type, key) {
+            switch (type) {
+              case 'ResetSched':
+                item.Type = 'M'
+                if (key === 'Rate') {
+                  item.Rate = this.formatNumber(item.Rate, 6, false)
+                }
+                break
+              case 'Notional':
+                item.CustNotl = '1'
+                key[type] = this.formatNumber(
+                  key[type].replace(/,+\D/g),
+                  2,
+                  true
+                )
+                break
+              case 'FixRate':
+                item.CustFixd = '1'
+                key[type] = this.formatNumber(key[type], 4, false)
+                break
+              default:
+                item[type] = '1'
+                break
+            }
+          },
+          setSched: function() {
+            window.localStorage.setItem(
+              window.opener.guid + '-' + this.type + '-' + this.schedName,
+              JSON.stringify(this.sched)
+            )
+            window.close()
+          },
+          formatNumber: MathUtil.formatNumber,
+          formatDate: DateUtil.formatDate,
+          getQueryString: function(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+            var r = window.location.search.substr(1).match(reg)
+            if (r != null) return unescape(r[2])
+            return null
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

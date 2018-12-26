@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>FS-FX.ResetSched</title>
+  <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="/ele/index.css">
+  <!-- 引入自定义样式 -->
+  <link rel="stylesheet" href="/css/index_mod_fx.css">
+  <!-- 引入组件库 -->
+  <script src="/ele/index.js"></script>
+  <!-- 自定义js -->
+  <script type="text/javascript" src="/js/util.js"></script>
+</head>
+
+<body>
+  <div id="vue_det">
+    <div class="env" style="width:500px;" v-cloak align="center">
+      <h1 style="padding: 0">{{title}}序列</h1>
+      <el-button style="font-size: 16px;" size="mini" type="primary" @click=setSched>保存</el-button>
+      <br><br>
+    </div>
+
+    <div class="left" style="width:800px;margin-left: 10px;" v-if="sched.ResetSched" v-cloak align="left">
+      <table border='1' align='center' cellpadding='0' cellspacing='0'>
+        <thead>
+          <tr style="height: 41px;background:lightcyan">
+            <td style="font-size:16px;font-weight:normol;width: 60px;">编号</td>
+            <td v-for="
+              item,key in ResetSchedTableHead" :key="key">{{item}}</td>
+          </tr>
+        </thead>
+        <tbody v-for="item,i in sched.ResetSched.ResetList" :key="i">
+          <tr v-for="line,j in item.list" :key="j">
+            <td v-if="j===0" :rowspan="item.list.length" style="background:lightcyan; padding-top: 100px;" valign="top">
+              {{i+1}} </td>
+            <td v-if="j===0" :rowspan="item.list.length" style="padding-top: 100px;" :style="resStyle('textDate')"
+              valign="top">{{formatDate(item.AccrSta,'-')}}</td>
+            <td v-if="j===0" :rowspan="item.list.length" style="padding-top: 100px;" :style="resStyle('textDate')"
+              valign="top">{{formatDate(item.AccrEnd,'-')}}</td>
+            <td :style="resStyle('QuoDate')">
+              <el-date-picker size="mini" style="font-size:16px;font-weight:normol;width: 98%;" v-model="line.QuoDate"
+                type="date" value-format="yyyyMMdd" format="yyyy-MM-dd" @change="inputChange(line,'r')">
+              </el-date-picker>
+            </td>
+            <td :style="resStyle('textDate')">
+              {{formatDate(line.EffDate,'-')}}
+            </td>
+            <td :style="resStyle('Rate')">
+              <el-input size="medium" class="text-center" style="font-size:16px;font-weight:normol;width: 98%;" v-model="line.Rate"
+                @change="inputChange(line,'ResetSched','Rate')"></el-input>
+            </td>
+            <td :style="resStyle('Type')">
+              {{line.Type}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script type="text/javascript">
+    /* eslint-disable */
+    var vm = new Vue({
+      el: '#vue_det',
+      data: {
+        dealId: 'New',
+        sched: [],
+        schedobj: {},
+        type: '',
+        accrSta: '',
+        accrEnd: '',
+        num: 0,
+        title: '',
+        h: {
+          asia: '汇率重置',
+        },
+        tableHead: {
+          AccrSta: '计息开始',
+          AccrEnd: '计息结束',
+          QuoDate: '报价日期',
+          EffDate: '起息日期',
+          Rate: '类型',
+          Type: '利率'
+        },
+        ResetSchedTableHead: {
+          AccrSta: '计息开始',
+          AccrEnd: '计息结束',
+          QuoDate: '报价日期',
+          EffDate: '起息日期',
+          Rate: '利率',
+          Type: '类型',
+        },
+      },
+      created: function () {
+        this.type = this.getQueryString('type')
+        this.dealId = this.getQueryString('id')
+        this.title = this.h[this.type]
+        if (typeof window !== 'undefined' && window.opener && window.opener.guid) {
+          this.sched = JSON.parse(window.localStorage.getItem(window.opener.guid + '-' + this.type + 'resetsched'))
+          if (!this.sched) {
+            this.tip = '暂无序列'
+          }
+        }
+      },
+      methods: {
+        // inputChange: function (item) {
+        //   item.ResetType = 'M'
+        // },
+        setSched: function () {
+          window.localStorage.setItem(window.opener.guid + '-' + this.type + 'resetsched', JSON.stringify(this.sched))
+          window.close()
+        },
+        formatNumber: MathUtil.formatNumber,
+        formatDate: DateUtil.formatDate,
+        getQueryString: function (name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+          var r = window.location.search.substr(1).match(reg);
+          if (r != null) return unescape(r[2]);
+          return null;
+        },
+        resStyle: function (k) {
+          var style = {}
+          style['font-size'] = '16px'
+          style['height'] = '31px'
+          style['font-weight'] = 'normol'
+          switch (k) {
+            case 'textDate':
+              style.width = '120px'
+              break
+            case 'QuoDate':
+            case 'Rate':
+              style.width = '150px'
+              break
+            case 'Type':
+              style.width = '30px'
+              break
+            default:
+              style['text-align'] = 'center'
+              break
+          }
+          return style
+        },
+        inputChange: function (item, type, key) {
+          switch (type) {
+            case 'ResetSched':
+              item.Type = 'M'
+              if (key === 'Rate') {
+                item.Rate = this.formatNumber(item.Rate, 4, false)
+              }
+              break
+            case 'Notional':
+              item.CustNotl = '1'
+              key[type] = this.formatNumber(key[type].replace(/,+\D/g), 2, true)
+              break
+            case 'FixRate':
+              item.CustFixd = '1'
+              key[type] = this.formatNumber(key[type], 4, false)
+              break
+            default:
+              item[type] = '1'
+              break
+          }
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

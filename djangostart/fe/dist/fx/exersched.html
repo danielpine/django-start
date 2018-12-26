@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>FS-FX.ExerSched</title>
+  <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="/ele/index.css">
+  <!-- 引入自定义样式 -->
+  <link rel="stylesheet" href="/css/index_mod_fx.css">
+  <!-- 引入组件库 -->
+  <script src="/ele/index.js"></script>
+  <!-- 自定义js -->
+  <script type="text/javascript" src="/js/util.js"></script>
+  <style>
+    table {
+  border-top-color: black;
+  border-right-color: black;
+  border-bottom-color: black;
+  border-left-color: black;
+  border-top-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-left-style: solid;
+  width: 100%;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+td {
+  text-align: center;
+  border-color: black;
+  border-style: solid solid none none;
+  border-width: 1px;
+  font-size: 0.95em;
+}
+.text {
+  font-size: 14px;
+}
+
+.text-center input {
+  text-align: center;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: '';
+}
+.clearfix:after {
+  clear: both;
+}
+
+.box-card {
+  width: 480px;
+}
+hr {
+  margin: 20px auto;
+  height: 1px;
+  background: black;
+}
+[v-cloak]{
+display: none;/* 避免为渲染前显示vue代码 */
+ }
+
+ html,
+ body {
+   text-align: center;
+   background-color: aliceblue;
+   font-family: 微软雅黑;
+ }
+
+ footer {
+   padding: 20px;
+   text-align: center;
+   border-top: 1px solid #ddd;
+ }
+ .el-input--mini .el-input__inner{
+    text-align: right;
+}
+ a,
+ a:hover,
+ a:focus,
+ a:visited {
+   color: #000;
+ }
+
+ .logo {
+   width: 100%;
+   height: auto;
+   max-width: 400px;
+   max-height: 289px;
+ }
+
+ .el-input--medium .el-input__inner {
+   height: 30px;
+ }
+  </style>
+</head>
+
+<body>
+  <div id="vue_det">
+    <div class="env" style="width:500px;" v-cloak align="center">
+      <h1 style="padding: 0">{{title}}序列</h1>
+      <span>交易编号：{{dealId}}</span>
+      <br><br>
+    </div>
+    <div class="env" style="width:500px;" v-cloak align="center">
+      <div v-if="window.opener">
+        <table border='1' align='center' cellpadding='0' cellspacing='0'>
+          <thead>
+            <tr style="height: 41px;background:lightcyan">
+              <td style="font-size:16px;font-weight:normol;width: 60px;">编号</td>
+              <td v-for="
+                item,key in tableHead" :key="key">{{item}}</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item,i in sched" :key="i">
+              <td style="background:lightcyan"> {{i+1}} </td>
+              <td v-for="cell,k in tableHead" style="font-size:16px;font-weight:normol;width: 180px;" :style="{'text-align':k.indexOf('Value')!=-1?'right':'center','padding-right':k.indexOf('Value')!=-1?'10px':'0px'}"
+                :key="k">
+                <span v-if="k==='Index'">
+                  <el-input size="medium" class="text-center" style="font-size:16px;font-weight:normol;width: 98%;"
+                    v-model="item[k]" @change="inputChange(item)"></el-input>
+                </span>
+                <span v-else-if="k.indexOf('Date')!=-1">
+                  {{formatDate(item[k],'-')}}
+                </span>
+                <span v-else-if="k.indexOf('Value')!=-1">
+                  {{formatNumber(item[k],2,true)}}
+                </span>
+                <span v-else>
+                  {{item[k]}}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    /* eslint-disable */
+    var vm = new Vue({
+      el: '#vue_det',
+      data: {
+        dealId: 'New',
+        sched: [],
+        type: '',
+        title: '',
+        h: {
+          amer: '行权',
+        },
+        tableHead: {
+          ExerDate: 'ExerDate',
+          OptnValue: 'OptionVal',
+          ExerValue: 'StrikeVal',
+        }
+      },
+      created: function () {
+        this.type = this.getQueryString('type')
+        this.dealId = this.getQueryString('id')
+        this.title = this.h[this.type]
+        if (typeof window !== 'undefined' && window.opener && window.opener.guid) {
+          // this.env = window.opener.env
+          this.sched = JSON.parse(window.localStorage.getItem(window.opener.guid + '-' + this.type + 'exersched'))
+        }
+      },
+      methods: {
+        inputChange: function (item) {
+          item.ResetType = 'M'
+        },
+        setSched: function () {
+          window.localStorage.setItem(window.opener.guid + '-' + this.type + 'exersched', JSON.stringify(this.sched))
+          window.close()
+        },
+        formatNumber: MathUtil.formatNumber,
+        formatDate: DateUtil.formatDate,
+        getQueryString: function (name) {
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+          var r = window.location.search.substr(1).match(reg);
+          if (r != null) return unescape(r[2]);
+          return null;
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
