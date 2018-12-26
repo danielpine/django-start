@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>django-websocket</title>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+
+<body>
+    <!-- style="display:none" -->
+    <video autoplay id="sourcevid" style="width:800px;height:600px"></video>
+    <canvas id="output" style="width:800px;height:600px"></canvas>
+    <img id="receiver" style="width:800px;height:600px" />
+    <br>
+    <input type="text" id="message" value="Hello, World!" />
+    sendto <input type="text" id="sendto" value="lili" />
+    from <input type="text" id="from" value="tom" />
+    <br>
+    <br>
+    <button type="button" id="connect_websocket">连接 websocket</button>
+    <button type="button" id="receive_websocket">接收 websocket</button>
+    <button type="button" id="send_message">发送 message</button>
+    <button type="button" id="close_websocket">关闭 websocket</button>
+    <h1>Received Messages</h1>
+    <div id="messagecontainer"></div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        var back = document.getElementById('output');
+        var backcontext = back.getContext('2d');
+        var video = document.getElementsByTagName('video')[0];
+        var success = function (stream) {
+            //获取视屏流，转换为url
+            video.src = window.URL.createObjectURL(stream);
+        }
+        // 将视频帧绘制到Canvas对象上,Canvas每100ms切换帧，形成肉眼视频效果  
+        var draw = function () {
+            try {
+                backcontext.drawImage(video, 0, 0, back.width, back.height);
+            } catch (e) {
+                if (e.name == "NS_ERROR_NOT_AVAILABLE") {
+                    return setTimeout(draw, 1);
+                } else {
+                    throw e;
+                }
+            }
+            if (video.src) {
+                // Canvas的内容转化成PNG data URI并发送到服务器，0.5为和压缩系数
+                window.s.send(back.toDataURL("image/jpeg", 0.95));
+            }
+            setTimeout(draw, 0.1);
+        }
+        //调用设备的摄像头,并将资源放入video标签
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, success, console.log);
+        $('#connect_websocket').click(function () {
+            if (window.s) {
+                window.s.close()
+            }
+            /*创建socket连接*/
+            var socket = new WebSocket("ws://" + '127.0.0.1:8000' + "/rec/echo/?user=" + $(
+                '#from').val());
+            socket.onopen = function () {
+                draw();
+                console.log('WebSocket open'); //成功连接上Websocket
+            };
+            socket.onmessage = function (e) {
+                console.log('message: ' + e.data); //打印出服务端返回过来的数据
+                var msgs = e.data.split('*#*#*')
+                $('#messagecontainer').append(
+                        "<div style='width:300px;' align=left>" +
+                        msgs[0] + ':' + '<p>' + msgs[1] + '</p>') +
+                    "</div>";
+            };
+            // Call onopen directly if socket is already open
+            if (socket.readyState == WebSocket.OPEN) socket.onopen();
+            window.s = socket;
+        });
+        $('#receive_websocket').click(function () {
+            //创建一个socket实例
+            var receiver_socket = new WebSocket("ws://" + '127.0.0.1:8000' +
+                "/rec/echo/?user=replay");
+            console.log("ws://" + '127.0.0.1:8000' + "/rec/echo/?user=" + $(
+                '#from').val())
+            var image = document.getElementById('receiver');
+            // 监听消息
+            receiver_socket.onmessage = function (data) {
+                image.src = data.data;
+                console.log(data.data)
+            }
+        });
+        $('#send_message').click(function () {
+            //如果未连接到websocket
+            if (!window.s) {
+                alert("websocket未连接.");
+            } else {
+                window.s.send($('#from').val() + "*#*#*" + $('#message').val() + "*#*#*" + $(
+                    '#sendto').val()); //通过websocket发送数据
+                $('#messagecontainer').append(
+                    "<div style='width:300px;' align=right>" +
+                    $('#from').val() + ':' + '<p>' + $('#message').val() + '</p>' +
+                    "</div>"
+                );
+            }
+        });
+        $('#close_websocket').click(function () {
+            if (window.s) {
+                window.s.close(); //关闭websocket
+                console.log('websocket已关闭');
+            }
+        });
+    });
+</script>
+
+</html>

@@ -16,7 +16,7 @@
                v-on:click="blockClick($event, a+'-'+b+'-'+c+'-'+d)"
                :id="a+'-'+b+'-'+c+'-'+d"
                :title="a+'-'+b+'-'+c+'-'+d">
-            <div style="height:23%"></div>
+            <div style="height:35%"></div>
             <div style="display:none">{{itemd = data[a*3+c][b*3+d]}}</div>
             {{data[a*3+c][b*3+d]}}
           </div>
