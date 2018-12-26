@@ -157,7 +157,7 @@ class Room():
                         default=lambda o: o.__dict__,
                         sort_keys=True))
             }).encode('utf8'))
-        self.timer = threading.Timer(0.005, self.fun_timer, (request, ))
+        self.timer = threading.Timer(0.1, self.fun_timer, (request, ))
         self.timer.start()  #启用定时器
         self.count += 1
 
@@ -249,7 +249,7 @@ class Room():
         # send game data interval.
         self.send_game_data_interval()
         if self.game_status == 0:
-            self.timer = threading.Timer(0.005, self.flash_game_interval)
+            self.timer = threading.Timer(0.1, self.flash_game_interval)
             self.timer.start()  #启用定时器
             self.count += 1
         else:
