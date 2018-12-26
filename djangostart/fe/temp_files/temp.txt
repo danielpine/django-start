@@ -1,0 +1,36 @@
+	# 债券代码
+	bondId
+	# 债券定义代码
+	bondDefineId
+	# 债券简称
+	bondName
+	# 币种
+	ccy
+	# 起息日
+	effDate
+	# 到期日
+	matDate
+	# 期限
+	tenor
+	# 支付频率
+	frequency
+	# 计息规则
+	dayCount
+	# 票息类型
+	couponType
+	# 发行价格
+	issuePrice
+	# 固定利率
+	couponRate
+	# 浮动基准利率
+	floatIdx
+	# 基准利差
+	spread
+	# 含权类型
+	optionType
+	# 行权日期
+	expDate
+	# 债券类型
+	bondType
+	# 公司名称
+	compName

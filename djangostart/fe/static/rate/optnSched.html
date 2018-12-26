@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>FS-SWAPTION.OptnSched</title>
+  <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="/ele/index.css" />
+  <!-- 引入自定义样式 -->
+  <link rel="stylesheet" href="/css/index_mod_fx.css" />
+  <!-- 引入组件库 -->
+  <script src="/ele/index.js"></script>
+  <!-- 自定义js -->
+  <script type="text/javascript" src="/js/util.js"></script>
+</head>
+
+<body>
+  <div id="vue_det">
+    <div style="width:2600px;" v-if="window.opener&&OptnSched">
+      <!-- PaySched -->
+      <div class="left" style="width:900px;" v-cloak align="left">
+        <font style="color:blue; font-size:1.5em;"> {{ title }}</font>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>交易编号：{{ dealId }}</span>
+        <div v-if="OptnSched">
+          <table border="1" align="center" cellpadding="0" cellspacing="0">
+            <thead>
+              <tr style="height: 31px;background:lightcyan">
+                <td style="font-size:16px;font-weight:normol;" colspan="2">
+                  个性化
+                </td>
+                <td style="font-size:16px;font-weight:normol;">
+                  {{ OptnSched.CustDate === '0' ? 'No' : 'Yes' }}
+                </td>
+                <td style="font-size:16px;font-weight:normol;" colspan="2">
+                  {{ OptnSched.CustFees === '0' ? 'No' : 'Yes' }}
+                </td>
+                <td style="font-size:16px;font-weight:normol;" colspan="2"></td>
+              </tr>
+              <tr style="height: 41px;background:lightcyan">
+                <td style="font-size:16px;font-weight:normol;width: 60px;">
+                  编号
+                </td>
+                <td v-for="
+                item,key in OptnSchedTableHead" :key="key">
+                  {{ item }}
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item,i in OptnSched.List" :key="i">
+                <td style="background:lightcyan">{{ i + 1 }}</td>
+                <td v-for="cell,k in OptnSchedTableHead" :style="optnStyle(k)" :key="k">
+                  <span v-if="k==='ExerFees' || k==='OptnRent'">
+                    <el-input size="medium" class="text-center" style="font-size:16px;font-weight:normol;width: 99%;"
+                      v-model="item[k]" @change="inputChange(OptnSched,k,item)"></el-input>
+                  </span>
+                  <span v-else-if="k==='NotfDate'">
+                    {{
+                    formatDate(item[k],
+                    '-'
+                    )
+                    }}
+                  </span>
+                  <span v-else-if="k==='ExerDate'">
+                    <el-date-picker size="mini" style="font-size:16px;font-weight:normol;width: 98%;" v-model="item[k]"
+                      type="date" value-format="yyyyMMdd" @change="inputChange(OptnSched,'CustDate')" format="yyyy-MM-dd"
+                      placeholder="">
+                    </el-date-picker>
+                  </span>
+                  <span v-else-if="k==='IsExer'">
+                    <el-checkbox v-model="item[k]" style="color: black;" :checked="item[k]==='1'?true:false"></el-checkbox>
+                  </span>
+                  <span v-else> {{ item[k] }} </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+        <div class="left" style="width:300px;" v-cloak align="left">
+          <br />
+          <br />
+          <br />
+          <el-button style="font-size: 16px;" size="mini" type="primary" @click="setSched">保存</el-button>
+        </div>
+
+      </div>
+
+
+
+
+
+    </div>
+    <div v-else v-cloak>{{ tip }}</div>
+  </div>
+  <script type="text/javascript">
+    /* eslint-disable */
+    var vm = new Vue({
+      el: '#vue_det',
+      data: {
+        dealId: 'New',
+        tip: '加载中···',
+        OptnSched: {},
+        type: '',
+        schedName: '',
+        title: '行权序列',
+
+        OptnSchedTableHead: {
+          NotfDate: '通知日',
+          ExerDate: '行权日',
+          ExerFees: '行权费用',
+          OptnRent: '租权费用',
+          PerdPval: '现值',
+          IsExer: '行权状态'
+        }
+      },
+      created: function () {
+        this.type = this.getQueryString('type')
+        this.schedName = this.getQueryString('schedName')
+        this.tip = '加载中···'
+        if (
+          typeof window !== 'undefined' &&
+          window.opener &&
+          window.opener.guid
+        ) {
+          // this.env = window.opener.env
+          this.dealId = window.opener.dealId
+          this.OptnSched = JSON.parse(
+            window.localStorage.getItem(
+              window.opener.guid + '-' + this.type + '-' + this.schedName
+            )
+          )
+          if (!this.OptnSched) {
+            this.tip = '暂无序列'
+          }
+        }
+        console.log(this.OptnSched)
+      },
+      methods: {
+        optnStyle: function (k) {
+          var style = {}
+          style['font-size'] = '16px'
+          style['height'] = '31px'
+          style['font-weight'] = 'normol'
+          switch (k) {
+            case 'ExerFees':
+            case 'OptnRent':
+              style.width = '120px'
+              break
+            case 'PerdPval':
+              style.width = '150px'
+              break
+            default:
+              style['text-align'] = 'center'
+              break
+          }
+          if (k.indexOf('Date') != -1) {
+            style.width = '150px'
+          }
+          return style
+        },
+
+        inputChange: function (item, type, key) {
+          switch (type) {
+            case 'ExerFees':
+            case 'OptnRent':
+              item.CustFees = '1'
+              key[type] = this.formatNumber(
+                key[type].replace(/,+\D/g),
+                2,
+                true
+              )
+              break
+            default:
+              item[type] = '1'
+              break
+          }
+        },
+        setSched: function () {
+          window.localStorage.setItem(
+            window.opener.guid + '-' + this.type + '-' + this.schedName,
+            JSON.stringify(this.OptnSched)
+          )
+          console.log(this.OptnSched)
+          window.close()
+        },
+        formatNumber: MathUtil.formatNumber,
+        formatDate: DateUtil.formatDate,
+        getQueryString: function (name) {
+          var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+          var r = window.location.search.substr(1).match(reg)
+          if (r != null) return unescape(r[2])
+          return null
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

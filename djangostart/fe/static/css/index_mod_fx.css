@@ -1,0 +1,329 @@
+/*下拉菜单和日期选择弹出层到框的距离，在size="mini"时调整为0*/
+.el-popper[x-placement^='bottom'] {
+  margin-top: 0;
+}
+
+.el-popper[x-placement^='top'] {
+  margin-bottom: 0;
+}
+
+/*调整文本框内的字体颜色*/
+.el-form-item__label,
+.el-input__inner {
+  color: black;
+}
+
+.el-tag--info,
+.el-tag--info .el-tag__close {
+  color: black;
+}
+
+/*调整文本框的背景色*/
+.el-input__inner {
+  /*background-color: moccasin;*/
+  background-color: rgba(0, 139, 139, 0.2);
+  height: 24px;
+  line-height: 24px;
+  font-size: 16px;
+  font-weight: normol;
+  width: 99%;
+}
+
+.book-readonly-input .el-input__inner[readonly~='readonly'] {
+  /*background-color: moccasin;*/
+  background-color: #f5f7fa;
+}
+
+.book .el-input__inner[readonly~='readonly'] {
+  /*background-color: moccasin;*/
+  color: black;
+}
+
+.el-input.is-disabled .el-input__inner {
+  /*background-color: moccasin;*/
+  color: #000;
+}
+
+/*type="primary"的按钮调整属性*/
+.el-button--primary {
+  color: #fff;
+  background-color: darkcyan;
+  border-color: darkcyan;
+  width: 121px;
+  height: 23px;
+  line-height: 23px;
+  margin: 0 5px;
+}
+
+/*输入框内的小图标的line-height为0，消除按钮高度调为23时图标line-height为1时将框撑大*/
+[class*=' el-icon-'],
+[class^='el-icon-'] {
+  line-height: 0;
+}
+
+/*下拉菜单中的字体调整和高度调整*/
+.el-select-dropdown__item {
+  font-size: 13px;
+  color: black;
+  height: 25px;
+  line-height: 25px;
+}
+
+/*部分字体颜色*/
+.el-select-dropdown__item.selected,
+.el-date-table td.today span,
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected,
+.el-time-panel__btn.confirm,
+.el-time-panel__btn.confirm {
+  color: darkcyan;
+}
+
+/*日期选择框年份月份两边的按钮调整*/
+.el-picker-panel__icon-btn {
+  line-height: 16px;
+}
+
+/*调整日期选择器中每一个日期的点击范围，保证鼠标移动时字体变色*/
+.el-date-table td div {
+  padding: 0 0;
+  height: 100%;
+}
+
+.el-date-table td {
+  padding: 0 0;
+}
+
+/*多选框选项中的删除图标高度调整*/
+.el-select .el-tag__close {
+  margin-top: -4px;
+}
+
+/*多选框标签的边距和颜色调整*/
+.el-select .el-tag {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-color: transparent;
+  margin: 2px 0 0 4px;
+  background-color: cadetblue;
+}
+
+/*调整部分鼠标悬浮的文字颜色*/
+.available div:hover,
+.el-picker-panel__icon-btn:hover,
+.el-date-picker__header-label:hover,
+.el-time-spinner__item.active:not(.disabled) {
+  color: darkcyan;
+}
+
+.el-date-table td.current:not(.disabled) span {
+  color: #fff;
+  background-color: darkcyan;
+}
+
+/*调整按钮的行高防止自定义按钮高度时文字不居中*/
+.el-button {
+  line-height: 0;
+}
+
+/*调整primary按钮的部分伪类样式和状态样式*/
+.el-button--primary:hover {
+  background-color: rgba(0, 139, 139, 0.6);
+  border-color: rgba(0, 139, 139, 0.5);
+}
+
+.el-button--primary:focus {
+  background-color: rgba(0, 139, 139, 0.5);
+  border-color: rgba(0, 139, 139, 0.5);
+}
+
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:active,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-disabled:hover {
+  color: #fff;
+  background-color: lightgray;
+  border-color: lightgray;
+}
+
+/*文本框内的图标颜色*/
+.el-input__prefix,
+.el-input__suffix {
+  color: teal;
+}
+
+.common-select {
+  width: 125px;
+}
+
+.el-date-editor .el-range-input::-webkit-input-placeholder {
+  color: #090d16;
+}
+
+.el-date-editor .el-range-input:-ms-input-placeholder {
+  color: #090c13;
+}
+
+.el-date-editor .el-range-input::placeholder {
+  color: #010308;
+}
+
+.el-input__inner::-webkit-input-placeholder {
+  color: black;
+}
+
+.el-input__inner:-ms-input-placeholder {
+  color: black;
+}
+
+.el-input__inner::placeholder {
+  color: black;
+}
+
+.lumptable {
+  width: 1300px;
+  padding-right: 30px;
+  margin-bottom: 10px;
+}
+
+.lumptable .cell {
+  padding: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.pright10 .cell {
+  padding: 0px;
+  padding-left: 0px;
+  padding-right: 10px;
+}
+
+.lumptable .is-leaf .cell {
+  padding: 0px;
+}
+
+.lumptable .el-table_1_column_1 {
+  padding: 0px;
+  padding-right: 10px;
+}
+
+.lumptable .cell .el-input__inner {
+  border-radius: 0px;
+}
+
+.lumptable .lumpamount .el-input__inner {
+  text-align: right;
+  padding-right: 10px;
+}
+
+/* radio text color */
+.el-radio__input.is-checked+.el-radio__label {
+  color: darkcyan;
+}
+
+/* radio button color */
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: darkcyan;
+  background: darkcyan;
+}
+
+table {
+  border-top-color: black;
+  border-right-color: black;
+  border-bottom-color: black;
+  border-left-color: black;
+  border-top-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-left-style: solid;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+  width: 100%;
+}
+
+.el-picker-panel__body-wrapper table,
+.el-picker-panel__body-wrapper td {
+  border: none;
+  border-width: 0;
+}
+
+td {
+  text-align: center;
+  border-color: black;
+  border-style: solid solid none none;
+  border-width: 1px;
+  font-size: 0.95em;
+}
+
+.text {
+  font-size: 14px;
+}
+
+.text-center input {
+  text-align: center;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: '';
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.box-card {
+  width: 480px;
+}
+
+hr {
+  margin: 20px auto;
+  height: 1px;
+  background: black;
+}
+
+[v-cloak] {
+  display: none;
+  /* 避免为渲染前显示vue代码 */
+}
+
+html,
+body {
+  text-align: center;
+  background-color: aliceblue;
+  font-family: 微软雅黑;
+}
+
+footer {
+  padding: 20px;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+
+.el-input--mini .el-input__inner {
+  text-align: right;
+}
+
+a,
+a:hover,
+a:focus,
+a:visited {
+  color: #000;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  max-width: 400px;
+  max-height: 289px;
+}
+
+.el-input--medium .el-input__inner {
+  height: 30px;
+}
