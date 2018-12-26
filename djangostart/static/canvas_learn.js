@@ -1,16 +1,3 @@
-var random = {
-    randomInt: function(start, end) {
-        switch (arguments.length) {
-            case 1:
-                return parseInt(Math.random() * start + 1);
-            case 2:
-                return parseInt(Math.random() * (end - start + 1) + start);
-            default:
-                return 0;
-        }
-    }
-}
-
 function rgb(a, b, c) {
     return "rgb(" + a + "," + b + "," + c + ")"
 }
@@ -44,7 +31,7 @@ var RENDERERER = {
     setParameters: function() {
         this.window = $(window);
         this.last_flash = new Date().getTime()
-        this.color_404 = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
+        this.color_404 = rgb(random(255), random(255), random(255))
         this.container = $('#jsi-particle-container');
         this.width = this.container.width();
         this.height = this.container.height();
@@ -105,11 +92,11 @@ var RENDERERER = {
         this.context.font = "40px Arial";
         var now = new Date().getTime()
         if (now - this.last_flash > 300) {
-            this.color_404 = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
+            this.color_404 = rgb(random(255), random(255), random(255))
             this.last_flash = now
         }
         this.context.strokeStyle = this.color_404
-        // this.context.strokeText("Sorry, 404 Not Found, But You Found a Boll!", this.width / 2 - 330, this.height / 2);
+            // this.context.strokeText("Sorry, 404 Not Found, But You Found a Boll!", this.width / 2 - 330, this.height / 2);
         this.context.strokeText("Welcome to Daniel Pine's Site!", this.width / 2 - 330, this.height / 2);
         this.context.fillStyle = rgb(255, 255, 255)
         this.context.font = "25px Arial";
@@ -155,7 +142,7 @@ var RENDERERER = {
         var my_gradient = this.context.createLinearGradient(0, 0, 0, 170);
         my_gradient.addColorStop(0, "black");
         my_gradient.addColorStop(1, "white");
-        // this.context.fillStyle = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
+        // this.context.fillStyle = rgb(random(255), random(255), random(255))
         //this.context.fillStyle = my_gradient
         //this.context.fillRect(0, 0, this.width, this.height);
         var ctx = this.context
@@ -168,7 +155,7 @@ var RENDERERER = {
         // ctx.strokeStyle = gradient;
         ctx.lineWidth = 5;
         // ctx.strokeStyle = "#0000ff";
-        // ctx.strokeRect(random.randomInt(this.width), random.randomInt(this.height), random.randomInt(this.width) / 2, random.randomInt(this.height) / 2);
+        // ctx.strokeRect(random(this.width), random(this.height), random(this.width) / 2, random(this.height) / 2);
         // ctx.font = "30px Verdana";
         // // 创建渐变
         // var gradient = ctx.createLinearGradient(0, 0, this.width, 0);
@@ -177,8 +164,8 @@ var RENDERERER = {
         // gradient.addColorStop("1.0", "red");
         // // 用渐变进行填充
         // ctx.strokeStyle = gradient;
-        ctx.strokeStyle = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
-        ctx.strokeText(this.text[random.randomInt(this.text.length - 1)], random.randomInt(this.width), random.randomInt(this.height));
+        ctx.strokeStyle = rgb(random(255), random(255), random(255))
+        ctx.strokeText(this.text[random(this.text.length - 1)], random(this.width), random(this.height));
         // ctx.beginPath();
         // ctx.lineCap = "miter";
         // ctx.lineJoin = "miter";
@@ -234,7 +221,7 @@ var RENDERERER = {
         // ctx.rect(50, 50, 150, 80);
         // ctx.stroke()
 
-        // this.context.fillStyle = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
+        // this.context.fillStyle = rgb(random(255), random(255), random(255))
         // ctx.fillRect(20, 20, 150, 100);
         // ctx.strokeRect(200, 200, 80, 100);
 
@@ -248,7 +235,7 @@ function Boll(x, y, r, sAngle, eAngle, counterclockwise) {
     this.sAngle = sAngle
     this.eAngle = eAngle
     this.counterclockwise = counterclockwise
-    this.color = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
+    this.color = rgb(random(255), random(255), random(255))
     this.draw = function(ctx) {
         ctx.lineWidth = 2;
         ctx.strokeStyle = this.color
@@ -261,10 +248,10 @@ function Boll(x, y, r, sAngle, eAngle, counterclockwise) {
 }
 
 function Particle(RENDERER) {
-    this.color = rgb(random.randomInt(255), random.randomInt(255), random.randomInt(255))
-    this.type = RENDERER.text[random.randomInt(RENDERER.text.length - 1)]
-    this.x = random.randomInt(RENDERER.width)
-    this.y = random.randomInt(RENDERER.height)
+    this.color = rgb(random(255), random(255), random(255))
+    this.type = RENDERER.text[random(RENDERER.text.length - 1)]
+    this.x = random(RENDERER.width)
+    this.y = random(RENDERER.height)
 
     this.draw = function(ctx) {
         ctx.lineWidth = 2;

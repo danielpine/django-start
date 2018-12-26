@@ -6,3 +6,7 @@ def index(request):
     user = request.GET.get('user')
     request.session['u'] = user
     return render(request, 'index.html')
+
+
+def webgl(request):
+    return render(request, 'webgl.html')
