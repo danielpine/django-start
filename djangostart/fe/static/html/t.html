@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DanielPine's World</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="/js/jquery.min.js"></script>
+</head>
+<style>
+    #cas {
+        display: block;
+        border: 1px solid;
+        margin: auto;
+    }
+    
+    .container {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+    }
+    
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-size: 12px;
+        font-family: "Microsoft YaHei", "微软雅黑", "Arial", "黑体", "宋体", sans-serif;
+        background: #ececec;
+    }
+    
+    * {
+        padding: 0;
+        margin: 0;
+    }
+    
+    ul,
+    li {
+        list-style: none;
+    }
+    
+    .panel {
+        position: absolute;
+        top: 30px;
+        left: 20px;
+        z-index: 2;
+    }
+    
+    .btns {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 330px;
+        height: 30px;
+        perspective: 800px;
+        color: #fff;
+        text-align: center;
+    }
+    
+    .btns.active span {
+        box-shadow: 0 0 30px #fff;
+    }
+    
+    .btns:nth-of-type(2) {
+        top: 90px;
+    }
+    
+    .btns:nth-of-type(3) {
+        top: 150px;
+    }
+    
+    .btns:nth-of-type(4) {
+        left: 160px;
+    }
+    
+    .btns span {
+        display: block;
+        width: 100px;
+        height: 30px;
+        margin-left: 5px;
+        line-height: 30px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+        position: relative;
+        float: left;
+        transform-style: preserve-3d;
+        transform-origin: top;
+        transition: 0.3s;
+        border: 2px solid #fff;
+    }
+    
+    .btns span:before {
+        content: attr(data-hover);
+        position: absolute;
+        display: block;
+        width: 100%;
+        left: -2px;
+        top: 100%;
+        height: 100%;
+        border: 2px solid #fff;
+        background: #000;
+        text-align: center;
+        transform-origin: top;
+        opacity: 0;
+        transform: rotateX(-90deg);
+        transition: 0.3s;
+    }
+    
+    .btns span:hover {
+        transform: rotateX(90deg);
+    }
+    
+    .btns span:hover:before {
+        opacity: 1;
+        box-shadow: 0 0 30px #fff;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    .rain {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 300;
+    }
+    
+    img {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<body>
+    <!-- <div class="panel" id="panel">
+        <div class="btns">
+            <span data-hover="Home">Home</span>
+        </div>
+    </div> -->
+</body>
+<script>
+    // document.write('<script src="' + '/load.js?t=' + new Date().getTime() + '"><\/script>')
+</script>
+<script src="/canvasBg.js"></script>
+
+</html>
