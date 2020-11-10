@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <style>
+        .div {
+            width: 100px;
+            height: 100px;
+            background: yellow;
+            position: fixed;
+            left: 10px;
+            top: 10px;
+        }
+    </style>
+    <div class="div" id="showDragTableId"></div>
+    <script>
+        var aaaa = document.getElementById("showDragTableId");
+        aaaa.onmousedown = function(e) {
+            e = e ? e : window.event; //因为兼容问题
+            let startX;
+            let startY;
+            let moveSwitch = true;
+            let currentLeft;
+            let currentTop;
+            e.stopPropagation();
+            startX = e.clientX;
+            startY = e.clientY;
+            currentLeft = document.getElementById("showDragTableId").offsetLeft; //通过对象获取对象的坐标
+            currentTop = document.getElementById("showDragTableId").offsetTop;
+            document.onmousemove = function(e) {
+                e.stopPropagation();
+                if (moveSwitch) {
+                    var x = e.clientX; //e.clientX是一个触摸事件，即是鼠标点击时的X轴上的坐标
+                    var y = e.clientY; //e.clientY是一个触摸事件，即是鼠标点击时的Y轴上的坐标
+                    var distanceX = x - startX; //X轴上获得移动的实际距离
+                    var distanceY = y - startY; //Y轴上获得移动的实际距离
+                    console.log(distanceX, distanceY);
+                    document.getElementById("showDragTableId").style.left = distanceX + currentLeft + "px";
+                    document.getElementById("showDragTableId").style.top = distanceY + currentTop + "px";
+                }
+            };
+            document.onmouseup = function(e) {
+                e.stopPropagation();
+                moveSwitch = false;
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        }
+    </script>
+</body>
+
+</html>
