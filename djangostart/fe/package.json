@@ -23,7 +23,7 @@
     "express": "^4.15.3",
     "file-saver": "^2.0.0-rc.3",
     "isomorphic-fetch": "^2.2.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "js-md5": "^0.7.3",
     "node-sass": "^4.10.0",
     "nuxt": "^1.0.0",
