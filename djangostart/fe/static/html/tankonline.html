@@ -5,57 +5,68 @@
     <meta charset="UTF-8">
     <title>Tank</title>
     <style>
-        .floatleft{
+        .floatleft {
             position: relative;
             float: left;
         }
-        .floatright{
+        
+        .floatright {
             float: right;
         }
     </style>
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/fe/static/js/jquery-1.8.3.min.js"></script>
     <script>
-        //===utils ↓===========================================================================
+        // ===utils ↓===========================================================================
     </script>
-    <script type="text/javascript" src="/html/tankGame.js"></script>
-    <script type="text/javascript" src="/html/main.js"></script>
+    <script type="text/javascript" src="/fe/static/html/tankGame.js?"></script>
+    <script type="text/javascript" src="/fe/static/html/main.js?" +(new Date())></script>
     <style>
-        html,body{-moz-user-select: none; -khtml-user-select: none; user-select: none;}
+        html,
+        body {
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            user-select: none;
+        }
     </style>
 </head>
 
-<body onkeydown="keydown();" onkeyup="keyup()" align=center>
+<body onkeydown="keydown();" onkeypress="keypress();" onkeyup="keyup()" style="background-color: black;margin: auto" align=center>
     <!--坦克大战的战场-->
-    <div>
-        <div class="floatright" style="width:1366px;" onmousedown="mousedown()">
-            <canvas id="tankMap" width="1366px" height="768px" style="background-color:black"></canvas>
+    <div align=center style="color: white" style="background-color: black;margin: auto">
+        <br>
+        <font>Welcome to TankOnline, Have fun!</font>
+        <br>
+        <div style="width:1366px;border: 1px solid whitesmoke;margin: auto" align=center onmousedown="mousedown()">
+            <canvas onmousemove="mousemove()" id="tankMap" width="1366px" height="768px" style="background-color:black"></canvas>
         </div>
-        <div class="floatleft" style="width:1300px;padding-right: 10px;">
+        <br>
+        <div style="width:1300px;text-align: center">
             <div style="height: 100px;">
-                <input type="button" id="login" value="Login" />
-                <input type="button" id="link" value="Link" />
+                <input style="width:100px;padding-right: 50px;" type="button" id="link" value="Link" />
+                <input style="width:100px;padding-right: 50px;" type="button" id="gamestatus" d value="New Life" />
+                <input style="width:100px;padding-right: 50px;" type="button" id="ResetAI" d value="Reset AI" />
+                <!-- <input type="button" id="login" value="Login" />
                 <input type="button" id="start" value="Start" />
                 <input type="button" id="getplayers" value="Get Players" />
                 <input type="button" id="getrooms" value="Get Rooms" />
                 <input type="text" id='room' />
-                <input type="button" id="inroom" value="In a Room" />
-                <input type="button" id="gamestatus" d value="Get Game Status" />
-                <input type="button" id="ResetAI" d value="Reset AI" />
+                <input type="button" id="inroom" value="In a Room" /> -->
                 <div id='tip2'></div>
                 <div id='tip3'></div>
             </div>
             <div id='tip'></div>
             <div id='tip4'></div>
         </div>
+        <div id='tip4'><span style="font-family:Arial, Helvetica, sans-serif">Copyright&nbsp;&copy;&nbsp;2017-2019 Daniel Pine. All rights reserved.</span></div>
     </div>
 </body>
 <script>
-    //得到画布
-    var canvas1 = document.getElementById("tankMap");
-    //得到绘图上下文(你可以理解是画笔)
-    var cxt = canvas1.getContext("2d");
-    //cxt.fillStyle = "#FFFFF";
-    //cxt.fillRect(0, 0, 1366, 768);
+    // 得到画布
+    var canvas1 = document.getElementById('tankMap')
+        // 得到绘图上下文(你可以理解是画笔)
+    var cxt = canvas1.getContext('2d')
+        // cxt.fillStyle = "#FFFFF";
+        // cxt.fillRect(0, 0, 1366, 768);
 </script>
 
 </html>

@@ -119,7 +119,7 @@ def tank(request):
             if code:
                 # print(message)
                 if code == 3333:  #ResetAI
-                    room[channelid].add_ai(random.randint(3, 10))
+                    room[channelid].add_ai(random.randint(3, 8))
                 if code == 1111:  #game_status
                     t = Tank(channelid, clientid, random.randint(140, 1300),
                              random.randint(140, 700), random.randint(0, 3),
@@ -173,19 +173,21 @@ def tank(request):
                     battle_ing = room[channelid].battling[clientid]['tank']
                     # print(battle_ing)
                     # print(rcid, rcmd)
-                    if rcmd == 87 or rcmd == 38:
+                    if rcmd == 87:
                         battle_ing.move(0)
                         # print('↑')
-                    elif rcmd == 68 or rcmd == 39:
+                    elif rcmd == 68:
                         battle_ing.move(1)
                         # print('→')
-                    elif rcmd == 83 or rcmd == 40:
+                    elif rcmd == 83:
                         battle_ing.move(2)
                         # print('↓')
-                    elif rcmd == 65 or rcmd == 37:
+                    elif rcmd == 65:
                         battle_ing.move(3)
+                    elif rcmd == 69:
+                        battle_ing.biu()
                         # print('←')
-                    elif rcmd == 32:
+                    elif rcmd in [16,32, 37, 38, 39, 40]:
                         # check shoting frequency
                         # LAST_SHOT_TIME_STAMP
                         user = room[channelid].battling[clientid]
@@ -200,7 +202,7 @@ def tank(request):
                             shotable = True
                             user['LAST_SHOT_TIME_STAMP'] = now
                         if shotable:
-                            battle_ing.shot()
+                            battle_ing.shot(rcmd)
                         # print('shot')
                     request.websocket.send(
                         json.dumps({

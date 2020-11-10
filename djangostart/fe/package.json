@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "reload": "pm2 stop feweb  && pm2 start npm --name feweb -- start",
-    "dev": "nuxt",
+    "dev": "nuxt --port 8000",
     "build": "nuxt build",
     "start": "nuxt build && nuxt start",
     "generate": "nuxt generate",
@@ -16,6 +16,7 @@
   "dependencies": {
     "axios": "^0.16.2",
     "cross-env": "^5.0.1",
+    "echarts": "^4.2.1",
     "element-ui": "^2.4.6",
     "es6-promise": "^4.2.5",
     "eslint-plugin-vue": "^4.7.1",

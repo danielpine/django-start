@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <title>Tank</title>
     <style>
-        .floatleft{
+        .floatleft {
             position: relative;
             float: left;
         }
-        .floatright{
+        
+        .floatright {
             float: right;
         }
     </style>
@@ -36,616 +37,589 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 </body>
 <script>
-    //===utils ↓===========================================================================
-    function Msg(code, type, message, data) {
-        this.code = code
-        this.type = type
-        this.message = message
-        this.data = data
+    // ===utils ↓===========================================================================
+    function Msg (code, type, message, data) {
+      this.code = code
+      this.type = type
+      this.message = message
+      this.data = data
     }
 
-    //===tk ↓===========================================================================
+    // ===tk ↓===========================================================================
 
     Array.prototype.remove = function (val) {
-        var index = this.indexOf(val);
-        if (index > -1) {
-            this.splice(index, 1);
-        }
-    };
-
-    //为了编程方便，我们定义两个颜色数组
-    var heroColor = new Array("#BA9658", "#FEF26E");
-    var enmeyColor = new Array("#00A2B5", "#00FEFE");
-    //其它的敌人坦克，这里的扩展性，还是不错的.
-    //定义一个炸弹类
-    function Bomb(x, y) {
-        this.x = x;
-        this.y = y;
-        this.isLive = true; //炸弹是否活的，默认true;
-        //炸弹有一个生命值
-        this.blood = 9;
-        //减生命值
-        this.bloodDown = function () {
-            if (this.blood > 0) {
-                this.blood--;
-            } else {
-                //说明炸弹死亡
-                this.isLive = false;
-            }
-        }
+      var index = this.indexOf(val)
+    if (index > -1) {
+        this.splice(index, 1)
+    }
     }
 
+//为了编程方便，我们定义两个颜色数组
+var heroColor = new Array('#BA9658', '#FEF26E')
+var enmeyColor = new Array('#00A2B5', '#00FEFE')
+//其它的敌人坦克，这里的扩展性，还是不错的.
+//定义一个炸弹类
+function Bomb (x, y) {
+      this.x = x
+    this.y = y
+    this.isLive = true //炸弹是否活的，默认true;
+    //炸弹有一个生命值
+    this.blood = 9
+    //减生命值
+    this.bloodDown = function () {
+        if (this.blood > 0) {
+          this.blood--
+        } else {
+          // 说明炸弹死亡
+          this.isLive = false
+        }
+      }
+    }
 
-    //子弹类
-    //type表示：这颗子弹是敌人的，还是自己的
-    //tank表示对象，说明这颗子弹，属于哪个坦克.
-    function Bullet(x, y, direct, speed, type, tank) {
-        this.x = x;
-        this.y = y;
-        this.direct = direct;
-        this.speed = speed;
-        this.timer = null;
-        this.isLive = true;
-        this.type = type;
-        this.tank = tank;
-        this.run = function run() {
+    // 子弹类
+    // type表示：这颗子弹是敌人的，还是自己的
+    // tank表示对象，说明这颗子弹，属于哪个坦克.
+    function Bullet (x, y, direct, speed, type, tank) {
+      this.x = x
+    this.y = y
+    this.direct = direct
+    this.speed = speed
+    this.timer = null
+    this.isLive = true
+    this.type = type
+    this.tank = tank
+    this.run = function run () {
+        // 在该表这个子弹的坐标时，我们先判断子弹是否已经到边界
+        // 子弹不前进，有两个逻辑，1.碰到边界，2. 碰到敌人坦克.
+        if (this.x <= 0 || this.x >= 1366 || this.y <= 0 || this.y >= 768 || this.isLive == false) {
+          // 子弹要停止.
+          window.clearInterval(this.timer)
+            //子弹死亡
+            this.isLive = false
+            if (this.type == 'enemy') {
+            this.tank.bulletIsLive = false
+            }
+          hero.bullets.remove(this)
+        } else {
+          // 这个可以去修改坐标
+          switch (this.direct) {
+            case 0:
+              this.y -= this.speed
+                    break;
+            case 1:
+              this.x += this.speed
+                    break;
+            case 2:
+              this.y += this.speed
+                    break;
+            case 3:
+              this.x -= this.speed
+                    break;
+          }
+        }
 
-            //在该表这个子弹的坐标时，我们先判断子弹是否已经到边界
-            //子弹不前进，有两个逻辑，1.碰到边界，2. 碰到敌人坦克.
-            if (this.x <= 0 || this.x >= 1366 || this.y <= 0 || this.y >= 768 || this.isLive == false) {
-                //子弹要停止.
-                window.clearInterval(this.timer);
-                //子弹死亡
-                this.isLive = false;
-                if (this.type == "enemy") {
-                    this.tank.bulletIsLive = false;
+        // document.getElementById("aa").innerText="子弹x="+this.x+" 子弹y="+this.y;
+      }
+    }
+
+    // 这是一个Tank类
+    function Tank (id, x, y, direct, color) {
+      this.id = id
+    this.x = x
+    this.y = y
+    this.speed = 3
+    this.isLive = true
+    this.direct = direct
+    //一个坦克，需要两个颜色.
+    this.color = color
+    //上移
+    this.moveUp = function () {
+        this.y -= this.speed
+            this.direct = 0
+        }
+      // 向右
+      this.moveRight = function () {
+        this.x += this.speed
+        this.direct = 1
+    }
+
+      // 下移
+      this.moveDown = function () {
+        this.y += this.speed
+            this.direct = 2
+        }
+      // 左
+      this.moveLeft = function () {
+        this.x -= this.speed
+        this.direct = 3
+    }
+    }
+
+    // 定义一个Hero类
+    // x 表示坦克的 横坐标, y 表示纵坐标, direct 方向
+    function Hero (id, x, y, direct, color) {
+      // 下面两句话的作用是通过对象冒充，达到继承的效果
+      this.tank = Tank
+    this.tank(id, x, y, direct, color)
+
+    this.bullets = []
+
+      // 增加一个函数，射击敌人坦克.
+      this.shotEnemy = function () {
+        if (this.bullets.length <= 30) {
+          // 创建子弹, 子弹的位置应该和hero有关系，并且和hero的方向有关.!!!
+          // this.x 就是当前hero的横坐标,这里我们简单的处理(细化)
+          switch (this.direct) {
+            case 0:
+              heroBullet = new Bullet(this.x + 9, this.y, this.direct, 3, 'hero', this.id)
+                    break;
+            case 1:
+              heroBullet = new Bullet(this.x + 30, this.y + 9, this.direct, 3, 'hero', this.id)
+                    break;
+            case 2:
+              heroBullet = new Bullet(this.x + 9, this.y + 30, this.direct, 3, 'hero', this.id)
+                    break;
+            case 3: // 右
+              heroBullet = new Bullet(this.x, this.y + 9, this.direct, 3, 'hero', this.id)
+                    break;
+          }
+          // 把这个子弹对象放入到数组中	 -> push函数
+          this.bullets.push(heroBullet)
+            //调用我们的子弹run, 50 是老师多次测试得到的一个结论., 这里技术难度比较大.
+            //就算你工作过1-2年，你也未必想到, 下面启动方式，每个子弹的定时器是独立,如果按原来的方法
+            //则所有子弹共享一个定时器.
+            var timer = window.setInterval('hero.bullets[' + (hero.bullets.length - 1) + '].run()', 50)
+            //把这个timer赋给这个子弹(js对象是引用传递!)
+            this.bullets[this.bullets.length - 1].timer = timer
+        } else {
+          alert('Bullet Not > 30 !')
+        }
+      }
+    }
+
+    // 定义一个EnemyTank类
+    function EnemyTank (x, y, direct, color) {
+      // 也通过对象冒充，来继承Tank
+      this.tank = Tank
+    this.count = 0
+    this.bulletIsLive = true
+
+    this.tank(x, y, direct, color)
+    this.qetBullet = null
+    this.run = function run () {
+        // 判断敌人的坦克当前方向
+        switch (this.direct) {
+          case 0:
+            if (this.y > 0) {
+              this.y -= this.speed
                 }
-                hero.bullets.remove(this)
-            } else {
-                //这个可以去修改坐标
-                switch (this.direct) {
-                    case 0:
-                        this.y -= this.speed;
-                        break;
-                    case 1:
-                        this.x += this.speed;
-                        break;
-                    case 2:
-                        this.y += this.speed;
-                        break;
-                    case 3:
-                        this.x -= this.speed;
-                        break;
+            break
+            case 1:
+            if (this.x + 30 < 1366) {
+              this.x += this.speed
                 }
-            }
-
-            //document.getElementById("aa").innerText="子弹x="+this.x+" 子弹y="+this.y;
-        }
-    }
-
-    //这是一个Tank类
-    function Tank(id, x, y, direct, color) {
-
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.speed = 3;
-        this.isLive = true;
-        this.direct = direct;
-        //一个坦克，需要两个颜色.
-        this.color = color;
-        //上移
-        this.moveUp = function () {
-            this.y -= this.speed;
-            this.direct = 0;
-        }
-        //向右
-        this.moveRight = function () {
-            this.x += this.speed;
-            this.direct = 1;
-        }
-
-        //下移
-        this.moveDown = function () {
-            this.y += this.speed;
-            this.direct = 2;
-        }
-        //左
-        this.moveLeft = function () {
-            this.x -= this.speed;
-            this.direct = 3;
-        }
-    }
-
-    //定义一个Hero类
-    //x 表示坦克的 横坐标, y 表示纵坐标, direct 方向	
-    function Hero(id, x, y, direct, color) {
-
-        //下面两句话的作用是通过对象冒充，达到继承的效果
-        this.tank = Tank;
-        this.tank(id, x, y, direct, color);
-
-        this.bullets = []
-
-        //增加一个函数，射击敌人坦克.
-        this.shotEnemy = function () {
-            if (this.bullets.length <= 30) {
-                //创建子弹, 子弹的位置应该和hero有关系，并且和hero的方向有关.!!!
-                //this.x 就是当前hero的横坐标,这里我们简单的处理(细化)
-                switch (this.direct) {
-                    case 0:
-                        heroBullet = new Bullet(this.x + 9, this.y, this.direct, 3, "hero", this.id);
-                        break;
-                    case 1:
-                        heroBullet = new Bullet(this.x + 30, this.y + 9, this.direct, 3, "hero", this.id);
-                        break;
-                    case 2:
-                        heroBullet = new Bullet(this.x + 9, this.y + 30, this.direct, 3, "hero", this.id);
-                        break;
-                    case 3: //右
-                        heroBullet = new Bullet(this.x, this.y + 9, this.direct, 3, "hero", this.id);
-                        break;
+            break
+            case 2:
+            if (this.y + 30 < 768) {
+              this.y += this.speed
                 }
-                //把这个子弹对象放入到数组中	 -> push函数
-                this.bullets.push(heroBullet);
-                //调用我们的子弹run, 50 是老师多次测试得到的一个结论., 这里技术难度比较大.
-                //就算你工作过1-2年，你也未必想到, 下面启动方式，每个子弹的定时器是独立,如果按原来的方法
-                //则所有子弹共享一个定时器.
-                var timer = window.setInterval("hero.bullets[" + (hero.bullets.length - 1) + "].run()", 50);
-                //把这个timer赋给这个子弹(js对象是引用传递!)
-                this.bullets[this.bullets.length - 1].timer = timer;
-            } else {
-                alert("Bullet Not > 30 !")
-            }
-        }
-    }
-
-    //定义一个EnemyTank类
-    function EnemyTank(x, y, direct, color) {
-
-        //也通过对象冒充，来继承Tank
-        this.tank = Tank;
-        this.count = 0;
-        this.bulletIsLive = true;
-
-        this.tank(x, y, direct, color);
-        this.qetBullet = null;
-        this.run = function run() {
-
-            //判断敌人的坦克当前方向
-            switch (this.direct) {
-
-                case 0:
-                    if (this.y > 0) {
-                        this.y -= this.speed;
-                    }
-                    break;
-                case 1:
-                    if (this.x + 30 < 1366) {
-                        this.x += this.speed;
-                    }
-                    break;
-                case 2:
-                    if (this.y + 30 < 768) {
-                        this.y += this.speed;
-                    }
-                    break;
-                case 3:
-                    if (this.x > 0) {
-                        this.x -= this.speed;
-                    }
-                    break;
-            }
-            //改变方向,走30次，再改变方向
-            if (this.count > 50) {
-                this.direct = Math.round(Math.random() * 3); //随机生成 0,1,2,3
-                this.count = 0;
-            }
-            this.count++;
-            //判断敌人坦克是否还活着
-            //if(this.tank.isLive==true){
-            //判断子弹是否已经死亡，如果死亡，则增加新的一颗子弹
-            if (this.bulletIsLive == false) {
-                //增子弹,这是需要考虑当前这个敌人坦克的方向，在增加子弹
-                switch (this.direct) {
-                    case 0:
-                        qetBullet = new Bullet(this.x + 9, this.y, this.direct, 3, "enemy", this);
-                        break;
-                    case 1:
-                        qetBullet = new Bullet(this.x + 30, this.y + 9, this.direct, 3, "enemy", this);
-                        break;
-                    case 2:
-                        qetBullet = new Bullet(this.x + 9, this.y + 30, this.direct, 3, "enemy", this);
-                        break;
-                    case 3: //右
-                        qetBullet = new Bullet(this.x, this.y + 9, this.direct, 3, "enemy", this);
-                        break;
+            break
+            case 3:
+            if (this.x > 0) {
+              this.x -= this.speed
                 }
-                //把子弹添加到敌人子弹数组中
-                enemyBullets.push(qetBullet);
-                //启动新子弹run
-                var mytimer = window.setInterval("enemyBullets[" + (enemyBullets.length - 1) + "].run()", 50);
-                enemyBullets[enemyBullets.length - 1].timer = mytimer;
-
-                this.bulletIsLive = true;
-            }
-            //}
-
+            break
         }
+        // 改变方向,走30次，再改变方向
+        if (this.count > 50) {
+          this.direct = Math.round(Math.random() * 3) //随机生成 0,1,2,3
+            this.count = 0
+        }
+        this.count++
+        //判断敌人坦克是否还活着
+        //if(this.tank.isLive==true){
+        //判断子弹是否已经死亡，如果死亡，则增加新的一颗子弹
+        if (this.bulletIsLive == false) {
+          // 增子弹,这是需要考虑当前这个敌人坦克的方向，在增加子弹
+          switch (this.direct) {
+            case 0:
+              qetBullet = new Bullet(this.x + 9, this.y, this.direct, 3, 'enemy', this)
+                    break;
+            case 1:
+              qetBullet = new Bullet(this.x + 30, this.y + 9, this.direct, 3, 'enemy', this)
+                    break;
+            case 2:
+              qetBullet = new Bullet(this.x + 9, this.y + 30, this.direct, 3, 'enemy', this)
+                    break;
+            case 3: // 右
+              qetBullet = new Bullet(this.x, this.y + 9, this.direct, 3, 'enemy', this)
+                    break;
+          }
+          // 把子弹添加到敌人子弹数组中
+          enemyBullets.push(qetBullet)
+            //启动新子弹run
+            var mytimer = window.setInterval('enemyBullets[' + (enemyBullets.length - 1) + '].run()', 50)
+            enemyBullets[enemyBullets.length - 1].timer = mytimer
+
+            this.bulletIsLive = true
+        }
+        // }
+      }
     }
 
-    //画出自己的子弹,多说一句，你也可以把该函数封装到Hero类中
-    function drawHeroBullet() {
-
-        //现在要画出所有子弹
-        for (var i = 0; i < hero.bullets.length; i++) {
-            var heroBullet = hero.bullets[i];
-            //这里，我们加入了一句话，但是要知道这里加，是需要对整个程序有把握
-            if (heroBullet != null && heroBullet.isLive) {
-                cxt.fillStyle = "#FEF26E";
-                cxt.fillRect(heroBullet.x, heroBullet.y, 2, 2);
-            }
+    // 画出自己的子弹,多说一句，你也可以把该函数封装到Hero类中
+    function drawHeroBullet () {
+      // 现在要画出所有子弹
+      for (var i = 0; i < hero.bullets.length; i++) {
+        var heroBullet = hero.bullets[i]
+        //这里，我们加入了一句话，但是要知道这里加，是需要对整个程序有把握
+        if (heroBullet != null && heroBullet.isLive) {
+          cxt.fillStyle = '#FEF26E';
+          cxt.fillRect(heroBullet.x, heroBullet.y, 2, 2)
         }
-
+      }
     }
 
-    //这里我们还需要添加一个函数，用于画出敌人的子弹,当然，画出敌人的子弹和自己的子弹是可以合并的.
-    function drawEnemyBullet() {
-        //检查坦克是否还活着
-        for (var j = 0; j < enemyTanks.length; j++) {
+    // 这里我们还需要添加一个函数，用于画出敌人的子弹,当然，画出敌人的子弹和自己的子弹是可以合并的.
+    function drawEnemyBullet () {
+      // 检查坦克是否还活着
+      for (var j = 0; j < enemyTanks.length; j++) {
+        var enemyTank = enemyTanks[j]
 
-            var enemyTank = enemyTanks[j];
-
-            if (enemyTank.isLive == true) {
-                for (var i = 0; i < enemyBullets.length; i++) {
-                    var etBullet = enemyBullets[i];
-                    //这里，我们加入了一句话，但是要知道这里加，是需要对整个程序有把握
-                    if (etBullet != null && etBullet.isLive) {
-                        cxt.fillStyle = "#00FEFE";
-                        cxt.fillRect(etBullet.x, etBullet.y, 2, 2);
-                    }
+        if (enemyTank.isLive == true) {
+          for (var i = 0; i < enemyBullets.length; i++) {
+            var etBullet = enemyBullets[i]
+                //这里，我们加入了一句话，但是要知道这里加，是需要对整个程序有把握
+                if (etBullet != null && etBullet.isLive) {
+              cxt.fillStyle = '#00FEFE';
+              cxt.fillRect(etBullet.x, etBullet.y, 2, 2)
                 }
-            }
+          }
         }
+      }
     }
-    //绘制坦克(敌人坦克和自己的坦克)
-    function drawTank(tank) {
+    // 绘制坦克(敌人坦克和自己的坦克)
+    function drawTank (tank) {
+      // 说明所有的坦克都要isLive这个属性
+      if (tank.isLive) {
+        // 考虑方向
+        switch (tank.direct) {
+          case 0: // 上
+          case 2: // 下
+            // 画出自己的坦克，使用前面的绘图技术
+            // 设置颜色
+            cxt.fillStyle = tank.color[0]
+                //韩老师使用 先死--->后活 (初学者最好用这个方法)
+                //先画出左面的矩形
+                cxt.fillRect(tank.x, tank.y, 5, 30)
+                //画出右边的矩形(这时请大家思路->一定要一个参照点)
+                cxt.fillRect(tank.x + 15, tank.y, 5, 30)
+                //画出中间矩形
+                cxt.fillRect(tank.x + 6, tank.y + 5, 8, 20)
+                //画出坦克的盖子
+                cxt.fillStyle = tank.color[1]
+                cxt.arc(tank.x + 10, tank.y + 15, 4, 0, 360, true)
+                cxt.fill()
+                //画出炮筒(直线)
+                cxt.strokeStyle = tank.color[1]
+                //设置线条的宽度
+                cxt.lineWidth = 1.5
+                cxt.beginPath()
+                cxt.moveTo(tank.x + 10, tank.y + 15)
 
-        //说明所有的坦克都要isLive这个属性
-        if (tank.isLive) {
+                if (tank.direct == 0) {
+              cxt.lineTo(tank.x + 10, tank.y)
+                } else if (tank.direct == 2) {
+              cxt.lineTo(tank.x + 10, tank.y + 30)
+                }
 
+            cxt.closePath()
+                cxt.stroke()
+                break;
+          case 1: // 右和左
+          case 3:
+            // 画出自己的坦克，使用前面的绘图技术
+            // 设置颜色
+            cxt.fillStyle = tank.color[0]
+                //韩老师使用 先死--->后活 (初学者最好用这个方法)
+                //先画出左面的矩形
+                cxt.fillRect(tank.x, tank.y, 30, 5)
+                //画出右边的矩形(这时请大家思路->一定要一个参照点)
+                cxt.fillRect(tank.x, tank.y + 15, 30, 5)
+                //画出中间矩形
+                cxt.fillRect(tank.x + 5, tank.y + 6, 20, 8)
+                //画出坦克的盖子
+                cxt.fillStyle = tank.color[1]
+                cxt.arc(tank.x + 15, tank.y + 10, 4, 0, 360, true)
+                cxt.fill()
+                //画出炮筒(直线)
+                cxt.strokeStyle = tank.color[1]
+                //设置线条的宽度
+                cxt.lineWidth = 1.5
+                cxt.beginPath()
+                cxt.moveTo(tank.x + 15, tank.y + 10)
+                //向右
+                if (tank.direct == 1) {
+              cxt.lineTo(tank.x + 30, tank.y + 10)
+                } else if (tank.direct == 3) { // 向左
+              cxt.lineTo(tank.x, tank.y + 10)
+                }
 
-            //考虑方向
-            switch (tank.direct) {
-
-                case 0: //上
-                case 2: // 下
-                    //画出自己的坦克，使用前面的绘图技术
-                    //设置颜色
-                    cxt.fillStyle = tank.color[0];
-                    //韩老师使用 先死--->后活 (初学者最好用这个方法)
-                    //先画出左面的矩形
-                    cxt.fillRect(tank.x, tank.y, 5, 30);
-                    //画出右边的矩形(这时请大家思路->一定要一个参照点)
-                    cxt.fillRect(tank.x + 15, tank.y, 5, 30);
-                    //画出中间矩形
-                    cxt.fillRect(tank.x + 6, tank.y + 5, 8, 20);
-                    //画出坦克的盖子
-                    cxt.fillStyle = tank.color[1];
-                    cxt.arc(tank.x + 10, tank.y + 15, 4, 0, 360, true);
-                    cxt.fill();
-                    //画出炮筒(直线)
-                    cxt.strokeStyle = tank.color[1];
-                    //设置线条的宽度
-                    cxt.lineWidth = 1.5;
-                    cxt.beginPath();
-                    cxt.moveTo(tank.x + 10, tank.y + 15);
-
-                    if (tank.direct == 0) {
-                        cxt.lineTo(tank.x + 10, tank.y);
-                    } else if (tank.direct == 2) {
-                        cxt.lineTo(tank.x + 10, tank.y + 30);
-                    }
-
-                    cxt.closePath();
-                    cxt.stroke();
-                    break;
-                case 1: //右和左
-                case 3:
-                    //画出自己的坦克，使用前面的绘图技术
-                    //设置颜色
-                    cxt.fillStyle = tank.color[0];
-                    //韩老师使用 先死--->后活 (初学者最好用这个方法)
-                    //先画出左面的矩形
-                    cxt.fillRect(tank.x, tank.y, 30, 5);
-                    //画出右边的矩形(这时请大家思路->一定要一个参照点)
-                    cxt.fillRect(tank.x, tank.y + 15, 30, 5);
-                    //画出中间矩形
-                    cxt.fillRect(tank.x + 5, tank.y + 6, 20, 8);
-                    //画出坦克的盖子
-                    cxt.fillStyle = tank.color[1];
-                    cxt.arc(tank.x + 15, tank.y + 10, 4, 0, 360, true);
-                    cxt.fill();
-                    //画出炮筒(直线)
-                    cxt.strokeStyle = tank.color[1];
-                    //设置线条的宽度
-                    cxt.lineWidth = 1.5;
-                    cxt.beginPath();
-                    cxt.moveTo(tank.x + 15, tank.y + 10);
-                    //向右
-                    if (tank.direct == 1) {
-                        cxt.lineTo(tank.x + 30, tank.y + 10);
-                    } else if (tank.direct == 3) { //向左
-                        cxt.lineTo(tank.x, tank.y + 10);
-                    }
-
-                    cxt.closePath();
-                    cxt.stroke();
-                    break;
-
-            }
+            cxt.closePath()
+                cxt.stroke()
+                break;
         }
+      }
     }
 
-    //编写一个函数，专门用于判断我的子弹，是否击中了某个敌人坦克
-    function isHitEnemyTank() {
+    // 编写一个函数，专门用于判断我的子弹，是否击中了某个敌人坦克
+    function isHitEnemyTank () {
+      // 取出每颗子弹
+      for (var i = 0; i < hero.bullets.length; i++) {
+        // 取出一颗子弹
+        var heroBullet = hero.bullets[i]
+        if (heroBullet.isLive) { // 子弹是活的，才去判断
+          // 让这颗子弹去和遍历每个敌人坦克判断
+          for (var j = 0; j < enemyTanks.length; j++) {
+            var enemyTank = enemyTanks[j]
 
-        //取出每颗子弹
-        for (var i = 0; i < hero.bullets.length; i++) {
-
-            //取出一颗子弹
-            var heroBullet = hero.bullets[i];
-            if (heroBullet.isLive) { //子弹是活的，才去判断
-                //让这颗子弹去和遍历每个敌人坦克判断
-                for (var j = 0; j < enemyTanks.length; j++) {
-
-                    var enemyTank = enemyTanks[j];
-
-                    if (enemyTank.isLive) {
-                        //子弹击中敌人坦克的条件是什么? 很多思路 , 韩老师的思想是
-                        //(看看这颗子弹，是否进入坦克所在矩形)
-                        //根据当时敌人坦克的方向来决定
-                        switch (enemyTank.direct) {
-                            case 0: //敌人坦克向上
-                            case 2: //敌人坦克向下
-                                if (heroBullet.x >= enemyTank.x && heroBullet.x <= enemyTank.x + 20 &&
+                if (enemyTank.isLive) {
+              // 子弹击中敌人坦克的条件是什么? 很多思路 , 韩老师的思想是
+              // (看看这颗子弹，是否进入坦克所在矩形)
+              // 根据当时敌人坦克的方向来决定
+              switch (enemyTank.direct) {
+                case 0: // 敌人坦克向上
+                case 2: // 敌人坦克向下
+                  if (heroBullet.x >= enemyTank.x && heroBullet.x <= enemyTank.x + 20 &&
                                     heroBullet.y >= enemyTank.y && heroBullet.y <= enemyTank.y + 30) {
-                                    //把坦克isLive 设为false ,表示死亡
-                                    enemyTank.isLive = false;
-                                    //该子弹也死亡
-                                    heroBullet.isLive = false;
-                                    //创建一颗炸弹
-                                    var bomb = new Bomb(enemyTank.x, enemyTank.y);
-                                    //然后把该炸弹放入到bombs数组中
-                                    bombs.push(bomb);
-                                }
-                                break;
-                            case 1: //敌人坦克向右
-                            case 3: //敌人坦克向左
-                                if (heroBullet.x >= enemyTank.x && heroBullet.x <= enemyTank.x + 30 &&
+                    // 把坦克isLive 设为false ,表示死亡
+                    enemyTank.isLive = false
+                                //该子弹也死亡
+                                heroBullet.isLive = false
+                                //创建一颗炸弹
+                                var bomb = new Bomb(enemyTank.x, enemyTank.y)
+                                //然后把该炸弹放入到bombs数组中
+                                bombs.push(bomb)
+                            }
+                  break
+                        case 1: // 敌人坦克向右
+                case 3: // 敌人坦克向左
+                  if (heroBullet.x >= enemyTank.x && heroBullet.x <= enemyTank.x + 30 &&
                                     heroBullet.y >= enemyTank.y && heroBullet.y <= enemyTank.y + 20) {
-                                    //把坦克isLive 设为false ,表示死亡
-                                    enemyTank.isLive = false;
-                                    heroBullet.isLive = false;
+                    // 把坦克isLive 设为false ,表示死亡
+                    enemyTank.isLive = false
+                                heroBullet.isLive = false
 
-                                    //创建一颗炸弹
-                                    var bomb = new Bomb(enemyTank.x, enemyTank.y);
-                                    //然后把该炸弹放入到bombs数组中
-                                    bombs.push(bomb);
-                                }
-                                break;
-
-                        }
+                                //创建一颗炸弹
+                                var bomb = new Bomb(enemyTank.x, enemyTank.y)
+                                //然后把该炸弹放入到bombs数组中
+                                bombs.push(bomb)
+                            }
+                  break
 
                     }
+            }
+          } // for
+        }
+      }
+    }
 
+    // 画出敌人炸弹
+    function drawEnemyBomb () {
+      for (var i = 0; i < bombs.length; i++) {
+        // 取出一颗炸弹
+        var bomb = bombs[i]
+        if (bomb.isLive) {
+          // 更据当前这个炸弹的生命值，来画出不同的炸弹图片
+          if (bomb.blood > 6) { // 显示最大炸弹图
+            var img1 = new Image()
+                img1.src = 'picture/bomb_1.gif';
+            var x = bomb.x
+                var y = bomb.y
+                img1.onload = function () {
+              cxt.drawImage(img1, x, y, 30, 30)
+                }
+          } else if (bomb.blood > 3) {
+            var img2 = new Image()
+                img2.src = 'picture/bomb_2.gif';
+            var x = bomb.x
+                var y = bomb.y
+                img2.onload = function () {
+              cxt.drawImage(img2, x, y, 30, 30)
+                }
+          } else {
+            var img3 = new Image()
+                img3.src = 'picture/bomb_3.gif';
+            var x = bomb.x
+                var y = bomb.y
+                img3.onload = function () {
+              cxt.drawImage(img3, x, y, 30, 30)
+                }
+          }
 
-                } //for
+          // 减血
+          bomb.bloodDown()
+            if (bomb.blood <= 0) {
+            // 怎么办?把这个炸弹从数组中去掉
+            bombs.splice(i, 1)
+
             }
         }
+      }
     }
 
-    //画出敌人炸弹 
-    function drawEnemyBomb() {
+    // 用于生成uuid
+    function S4 () {
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+}
 
-        for (var i = 0; i < bombs.length; i++) {
+    function guid () {
+      return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
+}
 
-            //取出一颗炸弹
-            var bomb = bombs[i];
-            if (bomb.isLive) {
+    // ===tk ↑===========================================================================
 
-
-
-                //更据当前这个炸弹的生命值，来画出不同的炸弹图片
-                if (bomb.blood > 6) { //显示最大炸弹图
-                    var img1 = new Image();
-                    img1.src = "picture/bomb_1.gif";
-                    var x = bomb.x;
-                    var y = bomb.y;
-                    img1.onload = function () {
-                        cxt.drawImage(img1, x, y, 30, 30);
-                    }
-                } else if (bomb.blood > 3) {
-                    var img2 = new Image();
-                    img2.src = "picture/bomb_2.gif";
-                    var x = bomb.x;
-                    var y = bomb.y;
-                    img2.onload = function () {
-                        cxt.drawImage(img2, x, y, 30, 30);
-                    }
-                } else {
-                    var img3 = new Image();
-                    img3.src = "picture/bomb_3.gif";
-                    var x = bomb.x;
-                    var y = bomb.y;
-                    img3.onload = function () {
-                        cxt.drawImage(img3, x, y, 30, 30);
-                    }
-                }
-
-                //减血
-                bomb.bloodDown();
-                if (bomb.blood <= 0) {
-                    //怎么办?把这个炸弹从数组中去掉
-                    bombs.splice(i, 1);
-
-                }
-            }
+    function link () {
+      if (window.s && window.s.readyState == WebSocket.OPEN) {
+        notice2('WebSocket already open')
+    } else {
+        /*创建socket连接 */
+        var socket = new WebSocket('ws://' + '127.0.0.1:8000' + '/rec/tank/?clientid=' + clientid)
+        socket.onopen = function () {
+          notice2('WebSocket open') //成功连接上Websocket
+        };
+        socket.onmessage = function (e) {
+          console.log(e.data)
         }
+        // Call onopen directly if socket is already open
+        if (socket.readyState == WebSocket.OPEN) socket.onopen()
+        window.s = socket
+    }
     }
 
-    //用于生成uuid
-    function S4() {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    function islinking () {
+      return window.s && window.s.readyState == WebSocket.OPEN
     }
 
-    function guid() {
-        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    function send (msg) {
+      if (islinking()) {
+        window.s.send(JSON.stringify(msg))
+      } else {
+        $('#tip2').html('连接断开')
+      }
     }
 
-    //===tk ↑===========================================================================
-
-    function link() {
-        if (window.s && window.s.readyState == WebSocket.OPEN) {
-            notice2('WebSocket already open');
-        } else {
-            /*创建socket连接*/
-            var socket = new WebSocket("ws://" + '127.0.0.1:8000' + "/rec/tank/?clientid=" + clientid);
-            socket.onopen = function () {
-                notice2('WebSocket open'); //成功连接上Websocket
-            };
-            socket.onmessage = function (e) {
-                console.log(e.data)
-            };
-            // Call onopen directly if socket is already open
-            if (socket.readyState == WebSocket.OPEN) socket.onopen();
-            window.s = socket;
-        }
-    }
-
-    function islinking() {
-        return window.s && window.s.readyState == WebSocket.OPEN
-    }
-
-    function send(msg) {
-        if (islinking()) {
-            window.s.send(JSON.stringify(msg))
-        } else {
-            alert('连接断开')
-        }
-    }
-
-    var clientid = localStorage.getItem("clientid") || function () {
+    var clientid = localStorage.getItem('clientid') || (function() {
         var id = guid()
         localStorage.setItem("clientid", id)
         return id
-    }()
-    //得到画布
-    var canvas1 = document.getElementById("tankMap");
-    //得到绘图上下文(你可以理解是画笔)
-    var cxt = canvas1.getContext("2d");
-    //我的坦克 hero
-    //方向 
-    var hero = new Hero(140, 140, 0, heroColor);
-    //定义敌人的坦克(敌人的坦克有多少? 思路 : 是单个单个的定义，还是放在数组中?)
-    //var enemyTanks = new Array();
-    //定义敌人子弹的数组
-    //var enemyBullets = new Array();
-    //定义一个炸弹数组(可以存放很多炸弹,)
-    var bombs = new Array();
-    //先死后活 ，定3个，后面我们把敌人坦克的数量，作出变量
-    //0->上, 1->右, 2->下 3->左
+    }())
+    // 得到画布
+    var canvas1 = document.getElementById('tankMap')
+//得到绘图上下文(你可以理解是画笔)
+var cxt = canvas1.getContext('2d')
+//我的坦克 hero
+//方向 
+var hero = new Hero(140, 140, 0, heroColor)
+//定义敌人的坦克(敌人的坦克有多少? 思路 : 是单个单个的定义，还是放在数组中?)
+//var enemyTanks = new Array();
+//定义敌人子弹的数组
+//var enemyBullets = new Array();
+//定义一个炸弹数组(可以存放很多炸弹,)
+var bombs = new Array()
+//先死后活 ，定3个，后面我们把敌人坦克的数量，作出变量
+//0->上, 1->右, 2->下 3->左
+//for (var i = 0; i < 3; i++) {
+//创建一个坦克
+//   var enemyTank = new EnemyTank((i + 1) * 50, 0, 2, enmeyColor);
+//把这个坦克放入数组
+//  enemyTanks[i] = enemyTank;
+//启动这个敌人的坦克
+//  window.setInterval("enemyTanks[" + i + "].run()", 50);
+//当创建敌人坦克时就分配子弹
+//  var eb = new Bullet(enemyTanks[i].x + 9, enemyTanks[i].y + 30, 2, 1.2, "enemy", enemyTanks[i]);
+//  enemyBullets[i] = eb;
+//启动该子弹
+//   var ettimer = window.setInterval("enemyBullets[" + i + "].run()", 50);
+//  enemyBullets[i].timer = ettimer;
+//  }
+function notice (msg) {
+      $('#tip').html(msg)
+    }
+
+    function noticeid (id, msg) {
+      $('#' + id).html(msg)
+    }
+
+    function notice2 (msg) {
+      $('#tip2').html(msg)
+    }
+    // 先调用一次
+    flashTankMap()
+//专门写一个函数，用于定时刷新我们的作战区，把要在作战区出现的元素(自己坦克，敌人坦克，子弹，炸弹，
+//障碍物...)->游戏思想
+function flashTankMap () {
+      // 把画布清理
+      cxt.clearRect(0, 0, 1366, 768)
+    //我的坦克
+    drawTank(hero)
+    notice('<div align=left>' + JSON.stringify(hero).replace(/,+/g, '<br>') + '</div>')
+      // 画出自己的子弹
+      // 子弹飞效果是怎么出现的?[答 ： 首先我们应该每隔一定时间(setInterval)就去刷新作战区,如果在刷新的时候，子弹坐标变换了，给人的感觉就是子弹在飞!]
+      drawHeroBullet()
+    //敌人的坦克
+    //判断一下敌人坦克是否击中
+    //isHitEnemyTank();
+    //drawEnemyBomb();
+    //drawEnemyBullet();
+    //画出所有敌人坦克
     //for (var i = 0; i < 3; i++) {
-    //创建一个坦克
-    //   var enemyTank = new EnemyTank((i + 1) * 50, 0, 2, enmeyColor);
-    //把这个坦克放入数组
-    //  enemyTanks[i] = enemyTank;
-    //启动这个敌人的坦克
-    //  window.setInterval("enemyTanks[" + i + "].run()", 50);
-    //当创建敌人坦克时就分配子弹
-    //  var eb = new Bullet(enemyTanks[i].x + 9, enemyTanks[i].y + 30, 2, 1.2, "enemy", enemyTanks[i]);
-    //  enemyBullets[i] = eb;
-    //启动该子弹
-    //   var ettimer = window.setInterval("enemyBullets[" + i + "].run()", 50);
-    //  enemyBullets[i].timer = ettimer;
-    //  }
-    function notice(msg) {
-        $('#tip').html(msg)
+    //drawTank(enemyTanks[i]);
+    //}
+    if (islinking()) {
+        send(new Msg(0, 'gameinfo', 'hero', hero))
+      }
     }
+    // 这是一个接受用户按键函数
+    function getCommand () {
+      // 我怎么知道，玩家按下的是什么键
+      // 说明当按下键后 事件--->event对象----->事件处理函数()
+      var code = event.keyCode //对应字母的ascii码->我们看码表
+    switch (code) {
+        case 87: // W
+          hero.moveUp()
+            break;
+        case 68: // D
+          hero.moveRight()
+            break;
+        case 83: // S
+          hero.moveDown()
+            break;
+        case 65: // A
+          hero.moveLeft()
+            break;
+        case 32: // Space
+          hero.shotEnemy()
+            break;
+      }
+      // 触发这个函数 flashTankMap();
+      flashTankMap()
+    //重新绘制所有的敌人的坦克.你可以在这里写代码(思想,我们干脆些一个函数，专门用于定时刷新我们的画布[作战区])
+}
+    // 每隔100毫秒去刷新一次作战区
+    window.setInterval('flashTankMap()', 100)
 
-    function noticeid(id, msg) {
-        $('#' + id).html(msg)
-    }
-
-    function notice2(msg) {
-        $('#tip2').html(msg)
-    }
-    //先调用一次
-    flashTankMap();
-    //专门写一个函数，用于定时刷新我们的作战区，把要在作战区出现的元素(自己坦克，敌人坦克，子弹，炸弹，
-    //障碍物...)->游戏思想
-    function flashTankMap() {
-        //把画布清理
-        cxt.clearRect(0, 0, 1366, 768);
-        //我的坦克
-        drawTank(hero);
-        notice("<div align=left>" + JSON.stringify(hero).replace(/,+/g, '<br>') + "</div>")
-        //画出自己的子弹
-        //子弹飞效果是怎么出现的?[答 ： 首先我们应该每隔一定时间(setInterval)就去刷新作战区,如果在刷新的时候，子弹坐标变换了，给人的感觉就是子弹在飞!]
-        drawHeroBullet();
-        //敌人的坦克
-        //判断一下敌人坦克是否击中
-        //isHitEnemyTank();
-        //drawEnemyBomb();
-        //drawEnemyBullet();
-        //画出所有敌人坦克
-        //for (var i = 0; i < 3; i++) {
-        //drawTank(enemyTanks[i]);
-        //}
-        if (islinking()) {
-            send(new Msg(0, 'gameinfo', 'hero', hero))
-        }
-    }
-    //这是一个接受用户按键函数
-    function getCommand() {
-        //我怎么知道，玩家按下的是什么键
-        //说明当按下键后 事件--->event对象----->事件处理函数()
-        var code = event.keyCode; //对应字母的ascii码->我们看码表
-        switch (code) {
-            case 87: //W
-                hero.moveUp();
-                break;
-            case 68: //D
-                hero.moveRight();
-                break;
-            case 83: //S
-                hero.moveDown();
-                break;
-            case 65: //A
-                hero.moveLeft();
-                break;
-            case 32: //Space
-                hero.shotEnemy();
-                break;
-        }
-        //触发这个函数 flashTankMap();
-        flashTankMap();
-        //重新绘制所有的敌人的坦克.你可以在这里写代码(思想,我们干脆些一个函数，专门用于定时刷新我们的画布[作战区])
-    }
-    //每隔100毫秒去刷新一次作战区
-    window.setInterval("flashTankMap()", 100);
-
-    $(function () {
-        $("#login").click(function () {
-            notice2(clientid + '：登录中···')
-        })
-        $("#link").click(function () {
-            notice2(clientid + '：连接中···')
-            link()
-        })
-        $("#start").click(function () {
-            notice2(clientid + '：开始游戏')
-        })
+$(function () {
+      $('#login').click(function () {
+        notice2(clientid + '：登录中···')
+      })
+      $('#link').click(function () {
+        notice2(clientid + '：连接中···')
+        link()
+      })
+      $('#start').click(function () {
+        notice2(clientid + '：开始游戏')
+      })
     })
 </script>
 <script type="text/javascript" src="tankGame.js"></script>

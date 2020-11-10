@@ -317,7 +317,7 @@ class Room():
                     0,
                     10) < 5 and now - tank.ai_last_shot_time > random.randint(
                         500, 1000):
-                tank.shot()
+                tank.shot(tank.direct)
                 tank.ai_last_shot_time = now
 
     def run(self):

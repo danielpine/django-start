@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%"></div>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+    <script type="text/javascript">
+        /* eslint-disable */
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom);
+        var app = {};
+
+        let xx = [10, 25, 50, 75, 90];
+        let yy = [0.1, 0.7, 0.9, 1, 2, 3, 6, 12];
+        let odata = {
+            0.1: [11.2797, 11.9218, 11.7558, 11.6656, 10.7187],
+            0.7: [8.0075, 7.8237, 7.6154, 7.5364, 7.5672],
+            0.9: [8.229, 8.0022, 7.728, 7.6284, 7.693],
+            1: [8.1122, 7.7305, 7.3651, 7.2634, 7.2852],
+            2: [8.3064, 7.8309, 7.3795, 7.2555, 7.2789],
+            3: [8.5019, 7.9129, 7.3943, 7.248, 7.2958],
+            6: [9.2161, 8.3452, 7.6295, 7.4446, 7.5541],
+            12: [10.0547, 8.8996, 7.9781, 7.7649, 7.988]
+        };
+
+        let data = [];
+        // 曲面图要求给入的数据是网格形式按顺序分布。
+        for (let y = 0; y < yy.length; y++) {
+            for (let x = 0; x < xx.length; x++) {
+                console.log(yy[y]);
+                data.push([xx[x], yy[y], odata[yy[y]][x]]);
+            }
+        }
+        console.log(data);
+
+        option = null;
+        option = {
+            tooltip: {},
+            backgroundColor: '#fff',
+            visualMap: {
+                show: false,
+                dimension: 2,
+                min: -1,
+                max: 1,
+                inRange: {
+                    color: [
+                        '#313695',
+                        '#4575b4',
+                        '#74add1',
+                        '#abd9e9',
+                        '#e0f3f8',
+                        '#ffffbf',
+                        '#fee090',
+                        '#fdae61',
+                        '#f46d43',
+                        '#d73027',
+                        '#a50026'
+                    ]
+                }
+            },
+            xAxis3D: {
+                type: 'value'
+            },
+            yAxis3D: {
+                type: 'value'
+            },
+            zAxis3D: {
+                type: 'value'
+            },
+            grid3D: {
+                viewControl: {
+                    projection: 'orthographic'
+                }
+            },
+            series: [{
+                type: 'surface',
+                wireframe: {
+                    show: false
+                },
+                data: data
+            }]
+        };
+        if (option && typeof option === 'object') {
+            myChart.setOption(option, true);
+        }
+    </script>
+</body>
+
+</html>
